@@ -23,90 +23,76 @@
       <input
         type="text"
         class="up-search-input"
-        placeholder="商品名・キーワードで検索（見た目だけ）"
-      >
+        placeholder="商品名・キーワードで検索（見た目だけ）">
     </div>
   </section>
 
-  <!-- カテゴリ（UberEats風 横スクロール） -->
+  <!-- カテゴリ横スクロール（見た目だけのダミー） -->
   <section class="up-category-section">
     <div class="up-category-scroll">
-      <span class="up-cat-pill up-cat-pill--active">すべて</span>
-      <span class="up-cat-pill">ペットボトル飲料</span>
-      <span class="up-cat-pill">お菓子</span>
-      <span class="up-cat-pill">冷凍食品</span>
-      <span class="up-cat-pill">カップ麺</span>
-      <span class="up-cat-pill">ホットスナック</span>
-      <span class="up-cat-pill">デザート</span>
+      <div class="up-cat-pill up-cat-pill--active">すべて</div>
+      <div class="up-cat-pill">ペットボトル飲料</div>
+      <div class="up-cat-pill">お菓子</div>
+      <div class="up-cat-pill">冷凍食品</div>
+      <div class="up-cat-pill">カップ麺</div>
+      <div class="up-cat-pill">ホットスナック</div>
+      <div class="up-cat-pill">お酒</div>
     </div>
   </section>
 
-  <!-- メイン商品グリッド -->
+  <!-- 商品グリッド -->
   <main class="up-main">
     <div class="up-grid">
-
       <?php
-      // item 投稿タイプを全部取得
-      $item_query = new WP_Query(array(
+      // 商品投稿(item) を全部取得
+      $query = new WP_Query(array(
         'post_type'      => 'item',
         'posts_per_page' => -1,
         'orderby'        => 'date',
         'order'          => 'DESC',
       ));
 
-      if ( $item_query->have_posts() ) :
-        while ( $item_query->have_posts() ) :
-          $item_query->the_post();
-
-          // 価格がカスタムフィールドにあれば取得（なければ空）
-          $price = get_post_meta(get_the_ID(), 'price', true);
-          $terms = get_the_terms(get_the_ID(), 'item_category');
-          $term_names = array();
-
-          if ( ! is_wp_error($terms) && $terms ) {
-            foreach ( $terms as $t ) {
-              $term_names[] = $t->name;
-            }
-          }
-          $term_text = $term_names ? implode(' / ', $term_names) : 'カテゴリ未設定';
+      if ( $query->have_posts() ) :
+        while ( $query->have_posts() ) : $query->the_post();
       ?>
         <article class="up-card">
-          <a href="<?php the_permalink(); ?>" class="up-card-link">
-
+          <a class="up-card-link" href="<?php the_permalink(); ?>">
             <div class="up-card-image-wrap">
               <?php if ( has_post_thumbnail() ) : ?>
-                <?php the_post_thumbnail('medium', array('class' => 'up-card-image')); ?>
+                <?php the_post_thumbnail( 'medium', array( 'class' => 'up-card-image' ) ); ?>
               <?php else : ?>
                 <div class="up-card-image up-card-image--placeholder">
                   画像なし
                 </div>
               <?php endif; ?>
 
-              <div class="up-badge">店頭受け取り</div>
+              <div class="up-badge">店頭受取</div>
             </div>
 
             <div class="up-card-body">
-              <div class="up-card-title"><?php the_title(); ?></div>
-              <div class="up-card-meta"><?php echo esc_html($term_text); ?></div>
+              <h2 class="up-card-title"><?php the_title(); ?></h2>
+
+              <div class="up-card-meta">
+                <?php
+                  $terms = get_the_terms( get_the_ID(), 'item_category' );
+                  if ( $terms && ! is_wp_error( $terms ) ) {
+                    $names = wp_list_pluck( $terms, 'name' );
+                    echo esc_html( implode( ' / ', $names ) );
+                  } else {
+                    echo 'カテゴリ未設定';
+                  }
+                ?>
+              </div>
 
               <div class="up-card-desc">
-                <?php echo wp_trim_words(get_the_excerpt(), 16, '…'); ?>
+                <?php echo esc_html( wp_trim_words( get_the_content(), 18, '…' ) ); ?>
               </div>
 
               <div class="up-card-footer">
-                <div class="up-price">
-                  <?php if ( $price ) : ?>
-                    ¥<?php echo esc_html(number_format($price)); ?>
-                  <?php else : ?>
-                    ¥ — 
-                  <?php endif; ?>
-                </div>
-                <button type="button" class="up-order-btn">
-                  取り置きカゴに入れる
-                </button>
+                <div class="up-price">￥---</div>
+                <button class="up-order-btn">取り置きカゴに入れる</button>
               </div>
             </div>
-
           </a>
         </article>
       <?php
@@ -115,14 +101,12 @@
       else :
       ?>
         <div class="up-empty">
-          まだ商品が登録されていません。<br>
-          管理画面から「商品」投稿タイプで商品を追加してください。
+          商品がまだ登録されていません。
         </div>
       <?php endif; ?>
-
-    </div><!-- /.up-grid -->
+    </div>
   </main>
 
-</div><!-- /.up-app -->
+</div>
 
 <?php get_footer(); ?>
