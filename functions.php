@@ -45,3 +45,28 @@ function up_title($title = '') {
         echo '<title>' . esc_html(get_bloginfo('name')) . '</title>';
     }
 }
+
+
+
+
+<?php
+// テーマのCSSとJSを読み込む
+function uber_theme_assets() {
+    // メインのCSS
+    wp_enqueue_style(
+        'uber-style',
+        get_stylesheet_uri(),
+        array(),
+        '1.0'
+    );
+
+    // ダーク／ライト切り替え用 JS
+    wp_enqueue_script(
+        'uber-theme-toggle',
+        get_template_directory_uri() . '/js/theme-toggle.js',
+        array(),
+        '1.0',
+        true  // フッター読み込み
+    );
+}
+add_action('wp_enqueue_scripts', 'uber_theme_assets');
