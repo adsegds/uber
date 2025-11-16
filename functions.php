@@ -9,6 +9,13 @@ add_action('after_setup_theme', function () {
     add_theme_support('title-tag');       // <title> 自動
 });
 
+// 古いテンプレートが up_title() を呼んでも落ちないようにするダミー
+if ( ! function_exists('up_title') ) {
+    function up_title($title = '') {
+        // 何もしない（title-tag に任せる）
+    }
+}
+
 // 商品投稿タイプ item
 function up_register_item_post_type() {
     $labels = array(
@@ -50,7 +57,7 @@ function up_register_item_category_taxonomy() {
 }
 add_action('init', 'up_register_item_category_taxonomy');
 
-// CSS 読み込み（style.css を直指定）
+// CSS 読み込み（style.css）
 function uber_pickup_assets() {
     wp_enqueue_style(
         'uber-style',
