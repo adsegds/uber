@@ -1,101 +1,156 @@
 <?php
-/* フロントページ（トップ） */
+/**
+ * Uber Eats 風 トップページ
+ */
+get_header();
 ?>
-<!DOCTYPE html>
-<html <?php language_attributes(); ?>>
-<head>
-    <meta charset="<?php bloginfo('charset'); ?>">
-    <?php up_title('取り置きメニュー'); ?>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" href="<?php echo esc_url(get_stylesheet_uri()); ?>">
-    <?php wp_head(); ?>
-</head>
-<body <?php body_class(); ?>>
 
-<header class="header">
-  <div>南部店 PICKUP</div>
-  <div style="font-size:12px;opacity:0.8;">店頭受け取り専用 / 決済はレジで</div>
-</header>
+<div class="ue-app">
 
-<div class="container">
+  <!-- ヘッダー -->
+  <header class="ue-header">
+    <div class="ue-header-left">
+      <div class="ue-logo-circle">
+        L
+      </div>
+      <div>
+        <div class="ue-store-name">
+          <?php bloginfo('name'); ?>
+        </div>
+        <div class="ue-store-sub">
+          店頭受取り専用・決済はレジで
+        </div>
+      </div>
+    </div>
+    <div class="ue-header-right">
+      <button class="ue-chip ue-chip-filled">PICKUP</button>
+    </div>
+  </header>
 
-  <!-- 疑似検索バー -->
-  <div style="margin:12px 0;">
-    <input type="text" placeholder="商品名で検索" style="width:100%;padding:10px 12px;border-radius:999px;border:1px solid #ddd;font-size:14px;">
-  </div>
+  <!-- 検索 -->
+  <section class="ue-search-section">
+    <div class="ue-search-box">
+      <span class="ue-search-icon">🔍</span>
+      <input
+        type="text"
+        class="ue-search-input"
+        placeholder="商品名・キーワードで検索（見た目だけ）">
+    </div>
+  </section>
 
-  <!-- カテゴリ横スクロール -->
-  <div class="category-scroll">
-    <?php
-    $current_cat = isset($_GET['cat']) ? intval($_GET['cat']) : 0;
-    $terms = get_terms(array(
-      'taxonomy' => 'item_category',
-      'hide_empty' => true,
-    ));
-    echo '<a href="' . esc_url(home_url('/')) . '" class="category-pill ' . ($current_cat === 0 ? 'category-pill--active' : '') . '">すべて</a>';
-    foreach ($terms as $term) {
-        $active = ($current_cat === $term->term_id) ? 'category-pill--active' : '';
-        echo '<a href="' . esc_url(add_query_arg('cat', $term->term_id, home_url('/'))) . '" class="category-pill ' . $active . '">' . esc_html($term->name) . '</a>';
-    }
-    ?>
-  </div>
+  <!-- カテゴリ横スクロール（見た目用ダミー） -->
+  <section class="ue-category-section">
+    <div class="ue-section-title">カテゴリー</div>
+    <div class="ue-category-scroll">
+      <div class="ue-category-pill ue-category-pill--active">すべて</div>
+      <div class="ue-category-pill">お菓子</div>
+      <div class="ue-category-pill">ペットボトル飲料</div>
+      <div class="ue-category-pill">カップ麺</div>
+      <div class="ue-category-pill">冷凍食品</div>
+      <div class="ue-category-pill">ホットスナック</div>
+      <div class="ue-category-pill">お酒</div>
+    </div>
+  </section>
 
-  <!-- 商品一覧 -->
-  <div>
-    <?php
-    $args = array(
-      'post_type' => 'item',
-      'posts_per_page' => -1,
-    );
-    if ($current_cat) {
-      $args['tax_query'] = array(
-        array(
-          'taxonomy' => 'item_category',
-          'field'    => 'term_id',
-          'terms'    => $current_cat,
-        )
+  <!-- メイン商品グリッド -->
+  <main class="ue-main">
+    <div class="ue-section-title">おすすめ商品</div>
+
+    <div class="ue-grid">
+      <?php
+      // 商品用のクエリ
+      $args = array(
+        'post_type'      => array('item', 'pickup_item', 'post'), // ここは使ってる投稿タイプに合わせて調整
+        'posts_per_page' => 24,
       );
-    }
-    $items = new WP_Query($args);
+      $loop = new WP_Query($args);
 
-    if ($items->have_posts()):
-      while ($items->have_posts()): $items->the_post();
-        $price = get_post_meta(get_the_ID(), 'up_price', true); // 後でカスタムフィールドで入れる用
+      if ($loop->have_posts()) :
+        while ($loop->have_posts()) :
+          $loop->the_post();
+
+          // サムネイル画像
+          $thumb = get_the_post_thumbnail_url(get_the_ID(), 'medium');
+          $price = get_post_meta(get_the_ID(), 'price', true); // カスタムフィールド price を想定
+          ?>
+          <article class="ue-card">
+            <a class="ue-card-inner" href="<?php the_permalink(); ?>">
+              <div class="ue-card-image-wrap">
+                <?php if ($thumb) : ?>
+                  <img src="<?php echo esc_url($thumb); ?>"
+                       alt="<?php the_title_attribute(); ?>"
+                       class="ue-card-image">
+                <?php else : ?>
+                  <div class="ue-card-image ue-card-image--placeholder">
+                    画像なし
+                  </div>
+                <?php endif; ?>
+
+                <div class="ue-badge ue-badge-pickup">店頭受取</div>
+              </div>
+
+              <div class="ue-card-body">
+                <h2 class="ue-card-title"><?php the_title(); ?></h2>
+
+                <div class="ue-card-meta">
+                  <?php
+                  $cats = get_the_category();
+                  if (!empty($cats)) {
+                    echo esc_html($cats[0]->name);
+                  } else {
+                    echo 'カテゴリー未設定';
+                  }
+                  ?>
+                </div>
+
+                <div class="ue-card-desc">
+                  <?php echo esc_html(wp_trim_words(get_the_excerpt(), 18)); ?>
+                </div>
+
+                <div class="ue-card-footer">
+                  <div class="ue-price">
+                    <?php
+                    if ($price) {
+                      echo '¥' . number_format_i18n($price);
+                    } else {
+                      echo '¥---';
+                    }
+                    ?>
+                  </div>
+                  <button type="button" class="ue-order-button">
+                    取り置きカゴに入れる
+                  </button>
+                </div>
+              </div>
+            </a>
+          </article>
+          <?php
+        endwhile;
+
+        // ページネーション
         ?>
-        <div class="item-card">
-          <div>
-            <?php if (has_post_thumbnail()): ?>
-              <?php the_post_thumbnail('medium'); ?>
-            <?php else: ?>
-              <div style="width:96px;height:96px;background:#ddd;border-radius:8px;"></div>
-            <?php endif; ?>
-          </div>
-          <div style="flex:1;">
-            <div class="item-card-title"><?php the_title(); ?></div>
-            <?php if ($price): ?>
-              <div class="item-card-price"><?php echo esc_html(number_format($price)); ?> 円</div>
-            <?php endif; ?>
-            <a class="item-card-button" href="<?php the_permalink(); ?>">詳細・取り置き</a>
-          </div>
+        <div class="ue-pagination">
+          <?php
+          echo paginate_links(array(
+            'prev_text' => '«',
+            'next_text' => '»',
+          ));
+          ?>
         </div>
         <?php
-      endwhile;
+
+      else :
+        ?>
+        <p class="ue-empty-text">まだ商品が登録されていません。</p>
+        <?php
+      endif;
+
       wp_reset_postdata();
-    else:
-      echo '<p>商品がまだ登録されていません。</p>';
-    endif;
-    ?>
-  </div>
+      ?>
+    </div>
+  </main>
 
-</div>
+</div><!-- /.ue-app -->
 
-<!-- 下タブナビ（シンプル） -->
-<nav class="footer-nav">
-  <a href="<?php echo esc_url(home_url('/')); ?>">メニュー</a>
-  <a href="<?php echo esc_url(home_url('/order')); ?>">注文履歴(仮)</a>
-  <a href="#">マイページ(予定)</a>
-</nav>
-
-<?php wp_footer(); ?>
-</body>
-</html>
+<?php
+get_footer();
