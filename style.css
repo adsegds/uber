@@ -411,3 +411,15 @@ body {
     grid-template-columns: 1fr;
   }
 }
+/* ======== フッター可視化（Uber Eats 黒背景対応） ======== */
+
+footer {
+  background: #ffffff !important;
+  color: #111111 !important;
+}
+
+footer a,
+footer span,
+footer li {
+  color: #111111 !important;
+}
