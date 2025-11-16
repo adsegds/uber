@@ -1,5 +1,9 @@
 <?php get_header(); ?>
 
+
+<button id="mode-toggle" class="mode-btn">🌙</button>
+
+
 <style>
 /* Uber Eats 風の黒背景 */
 body {
