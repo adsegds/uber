@@ -1,8 +1,8 @@
 <?php
-// サムネイルとか有効化
+// サムネイル有効化
 add_theme_support('post-thumbnails');
 
-// 商品用カスタム投稿タイプ
+// 商品投稿タイプ
 function up_register_item_post_type() {
     $labels = array(
         'name' => '商品',
@@ -21,7 +21,7 @@ function up_register_item_post_type() {
 }
 add_action('init', 'up_register_item_post_type');
 
-// 商品カテゴリ用タクソノミー
+// 商品カテゴリ
 function up_register_item_category_taxonomy() {
     $labels = array(
         'name' => '商品カテゴリ',
@@ -37,7 +37,7 @@ function up_register_item_category_taxonomy() {
 }
 add_action('init', 'up_register_item_category_taxonomy');
 
-// シンプルなタイトル出力
+// シンプルタイトル
 function up_title($title = '') {
     if ($title) {
         echo '<title>' . esc_html($title) . '</title>';
@@ -46,10 +46,14 @@ function up_title($title = '') {
     }
 }
 
+// ーーーーーーーーーーーーーーーーーー
+// ここから下に追記してOK
+// ーーーーーーーーーーーーーーーーーー
 
-// テーマのCSSとJSを読み込む
+// CSS / JS 読み込み
 function uber_theme_assets() {
-    // メインのCSS
+
+    // メインCSS
     wp_enqueue_style(
         'uber-style',
         get_stylesheet_uri(),
@@ -57,13 +61,13 @@ function uber_theme_assets() {
         '1.0'
     );
 
-    // ダーク／ライト切り替え用 JS
+    // ダーク / ライト切替JS
     wp_enqueue_script(
         'uber-theme-toggle',
         get_template_directory_uri() . '/js/theme-toggle.js',
         array(),
         '1.0',
-        true  // フッター読み込み
+        true
     );
 }
 add_action('wp_enqueue_scripts', 'uber_theme_assets');
