@@ -50,11 +50,11 @@ function up_register_item_category_taxonomy() {
 }
 add_action('init', 'up_register_item_category_taxonomy');
 
-// CSS 読み込み（ここが一番大事）
+// CSS 読み込み（style.css を直指定）
 function uber_pickup_assets() {
     wp_enqueue_style(
         'uber-style',
-        get_template_directory_uri() . '/style.css', // ← ここで style.css を直指定
+        get_template_directory_uri() . '/style.css',
         array(),
         '1.0.0'
     );
