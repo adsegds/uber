@@ -1,45 +1,67 @@
-<?php
-/* 商品詳細 */
-?>
-<!DOCTYPE html>
-<html <?php language_attributes(); ?>>
-<head>
-  <meta charset="<?php bloginfo('charset'); ?>">
-  <?php up_title(get_the_title()); ?>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="stylesheet" href="<?php echo esc_url(get_stylesheet_uri()); ?>">
-  <?php wp_head(); ?>
-</head>
-<body <?php body_class(); ?>>
+<?php get_header(); ?>
 
-<header class="header">
-  <div>商品詳細</div>
-</header>
+<div class="up-app">
 
-<div class="container">
-  <?php if (have_posts()): while (have_posts()): the_post(); ?>
-    <div>
-      <?php if (has_post_thumbnail()): the_post_thumbnail('large'); endif; ?>
-      <h1><?php the_title(); ?></h1>
-      <?php
-      $price = get_post_meta(get_the_ID(), 'up_price', true);
-      if ($price) {
-        echo '<p>' . esc_html(number_format($price)) . ' 円</p>';
-      }
-      ?>
-      <div><?php the_content(); ?></div>
-
-      <?php
-      // 注文ページへのリンク（商品IDをクエリに付ける）
-      $order_url = add_query_arg('item_id', get_the_ID(), home_url('/order'));
-      ?>
-      <p style="margin-top:20px;">
-        <a href="<?php echo esc_url($order_url); ?>" class="item-card-button">この商品を取り置きする</a>
-      </p>
+  <!-- ヘッダー（一覧と同じバー） -->
+  <header class="up-header">
+    <div class="up-header-left">
+      <div class="up-logo-circle">L</div>
+      <div>
+        <div class="up-store-name"><?php bloginfo('name'); ?></div>
+        <div class="up-store-sub">店頭受け取り専用・決済はレジで</div>
+      </div>
     </div>
-  <?php endwhile; endif; ?>
+    <div class="up-header-right">
+      PICKUP
+    </div>
+  </header>
+
+  <main class="up-main">
+    <?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
+      <article class="up-card">
+        <div class="up-card-image-wrap">
+          <?php if ( has_post_thumbnail() ) : ?>
+            <?php the_post_thumbnail( 'large', array( 'class' => 'up-card-image' ) ); ?>
+          <?php else : ?>
+            <div class="up-card-image up-card-image--placeholder">
+              画像なし
+            </div>
+          <?php endif; ?>
+          <div class="up-badge">店頭受取</div>
+        </div>
+
+        <div class="up-card-body">
+          <h1 class="up-card-title"><?php the_title(); ?></h1>
+
+          <div class="up-card-meta">
+            <?php
+              $terms = get_the_terms( get_the_ID(), 'item_category' );
+              if ( $terms && ! is_wp_error( $terms ) ) {
+                $names = wp_list_pluck( $terms, 'name' );
+                echo esc_html( implode( ' / ', $names ) );
+              } else {
+                echo 'カテゴリ未設定';
+              }
+            ?>
+          </div>
+
+          <div class="up-card-desc">
+            <?php the_content(); ?>
+          </div>
+
+          <div class="up-card-footer">
+            <div class="up-price">￥---</div>
+            <button class="up-order-btn">この商品を取り置きする（デザインだけ）</button>
+          </div>
+        </div>
+      </article>
+    <?php endwhile; endif; ?>
+
+    <p style="margin-top:16px;">
+      <a href="<?php echo esc_url( home_url( '/' ) ); ?>">← 商品一覧に戻る</a>
+    </p>
+  </main>
+
 </div>
 
-<?php wp_footer(); ?>
-</body>
-</html>
+<?php get_footer(); ?>
