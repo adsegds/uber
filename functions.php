@@ -67,12 +67,3 @@ function uber_pickup_assets() {
     );
 }
 add_action('wp_enqueue_scripts', 'uber_pickup_assets');
-
-
-
-// 管理画面では style.css を読み込まない
-function up_remove_admin_styles() {
-    wp_dequeue_style('uber-style');
-    wp_deregister_style('uber-style');
-}
-add_action('admin_enqueue_scripts', 'up_remove_admin_styles');
