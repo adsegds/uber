@@ -2,20 +2,22 @@
 Theme Name: Uber Pickup Theme
 Theme URI: https://example.com/
 Author: Ryota & Kizaku
-Description: UberEats風の取り置き専用テーマ
-Version: 0.2
+Description: Uber Eats 風の店頭受け取り専用テーマ
+Version: 1.0.0
 */
 
-/* 全体基本設定 */
-* {
+/* ベースリセットゆるめに */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background-color: #050505; /* UberEatsっぽい黒背景 */
-  color: #f8f8f8;
+  background-color: #f5f5f5;  /* 背景：UberEatsみたいな薄いグレー */
+  color: #111;
 }
 
 a {
@@ -23,218 +25,195 @@ a {
   text-decoration: none;
 }
 
-/* ========== Uber Eats 風 レイアウト ========== */
+/* ---------------------------
+   全体レイアウト
+--------------------------- */
 
-/* アプリ全体ラップ */
-.ue-app {
-  max-width: 1120px;
+.up-app {
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 16px 16px 96px;
+  padding: 16px 16px 80px;
 }
 
-/* ヘッダー（店名＋バッジ） */
-.ue-header {
+/* ---------------------------
+   ヘッダー（店舗バー）
+--------------------------- */
+
+.up-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 16px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e3e3e3;
+  padding: 12px 24px;
+  margin: 0 -16px 8px; /* 画面横いっぱいに見せる */
 }
 
-.ue-header-left {
+.up-header-left {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.ue-logo-circle {
+.up-logo-circle {
   width: 40px;
   height: 40px;
   border-radius: 999px;
-  background-color: #06c167;
+  background: #0058a3; /* ローソンっぽい青 */
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: #050505;
+  color: #ffffff;
+  font-size: 18px;
 }
 
-.ue-store-name {
+.up-store-name {
   font-size: 16px;
   font-weight: 700;
 }
 
-.ue-store-sub {
+.up-store-sub {
   font-size: 12px;
-  color: #a3a3a3;
+  color: #777;
 }
 
-.ue-header-right {
-  display: flex;
-  align-items: center;
-}
-
-/* チップ（バッジ） */
-.ue-chip {
-  border-radius: 999px;
-  padding: 6px 14px;
-  border: 1px solid #333;
-  background: #111;
-  color: #f5f5f5;
+.up-header-right {
   font-size: 12px;
-  cursor: pointer;
-  white-space: nowrap;
+  color: #555;
 }
 
-.ue-chip-filled {
-  background: #06c167;
-  border-color: #06c167;
-  color: #050505;
-  font-weight: 600;
+/* ---------------------------
+   検索バー
+--------------------------- */
+
+.up-search-section {
+  margin: 12px 0;
 }
 
-.ue-chip-outline {
-  border-color: #06c167;
-  color: #06c167;
-}
-
-/* 検索バー */
-.ue-search-section {
-  margin-bottom: 16px;
-}
-
-.ue-search-box {
+.up-search-box {
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: #111;
+  background-color: #ffffff;
   border-radius: 999px;
   padding: 10px 16px;
-  border: 1px solid #222;
+  border: 1px solid #e0e0e0;
 }
 
-.ue-search-icon {
+.up-search-icon {
   font-size: 14px;
+  color: #777;
 }
 
-.ue-search-input {
+.up-search-input {
   border: none;
   outline: none;
   background: transparent;
-  color: #f5f5f5;
   width: 100%;
   font-size: 14px;
 }
 
-.ue-search-input::placeholder {
-  color: #666;
+.up-search-input::placeholder {
+  color: #aaa;
 }
 
-/* セクションタイトル */
-.ue-section-title {
-  font-size: 14px;
-  font-weight: 600;
-  margin: 12px 0 8px;
+/* ---------------------------
+   カテゴリ横スクロール
+--------------------------- */
+
+.up-category-section {
+  margin-top: 4px;
+  margin-bottom: 12px;
 }
 
-/* カテゴリ横スクロール */
-.ue-category-section {
-  margin-bottom: 4px;
-}
-
-.ue-category-scroll {
+.up-category-scroll {
   display: flex;
   gap: 8px;
   overflow-x: auto;
   padding-bottom: 4px;
 }
 
-.ue-category-pill {
-  padding: 8px 14px;
+.up-category-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.up-category-scroll::-webkit-scrollbar-thumb {
+  background-color: #ddd;
   border-radius: 999px;
-  background: #111;
+}
+
+.up-cat-pill {
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: #f0f0f0;
   font-size: 13px;
   white-space: nowrap;
-  border: 1px solid #333;
 }
 
-.ue-category-pill--active {
-  background: #06c167;
-  border-color: #06c167;
-  color: #050505;
+.up-cat-pill--active {
+  background: #111;
+  color: #fff;
 }
 
-/* スクロールバー細く */
-.ue-category-scroll::-webkit-scrollbar,
-.ue-main::-webkit-scrollbar {
-  height: 4px;
-  width: 4px;
-}
-.ue-category-scroll::-webkit-scrollbar-thumb,
-.ue-main::-webkit-scrollbar-thumb {
-  background-color: #333;
-  border-radius: 999px;
+/* ---------------------------
+   商品グリッド
+--------------------------- */
+
+.up-main {
+  margin-top: 8px;
 }
 
-/* メインコンテンツ */
-.ue-main {
-  margin-top: 12px;
-}
-
-/* 商品グリッド */
-.ue-grid {
+.up-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
   gap: 16px;
 }
 
-/* カード */
-.ue-card {
-  background: #111;
-  border-radius: 18px;
+/* カード本体 */
+.up-card {
+  background: #ffffff;
+  border-radius: 16px;
   overflow: hidden;
-  border: 1px solid #181818;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
-  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, border-color 0.12s;
+  border: 1px solid #ededed;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
 }
 
-.ue-card:hover {
+.up-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.5);
-  border-color: #262626;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
 }
 
-.ue-card-inner {
+.up-card-link {
   display: block;
   color: inherit;
-  text-decoration: none;
 }
 
-/* カード画像 */
-.ue-card-image-wrap {
+/* 画像部分 */
+.up-card-image-wrap {
   position: relative;
+  height: 150px;
   overflow: hidden;
-  height: 160px;
 }
 
-.ue-card-image {
+.up-card-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
-.ue-card-image--placeholder {
+.up-card-image--placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1e1e1e, #101010);
-  color: #666;
+  background: #fafafa;
+  color: #bbb;
   font-size: 12px;
 }
 
-/* バッジ */
-.ue-badge {
+/* バッジ（例：店頭受取） */
+.up-badge {
   position: absolute;
   left: 10px;
   bottom: 10px;
@@ -242,171 +221,97 @@ a {
   border-radius: 999px;
   font-size: 11px;
   font-weight: 600;
+  background: rgba(255, 255, 255, 0.9);
+  color: #111;
+  border: 1px solid #e0e0e0;
 }
 
-.ue-badge-pickup {
-  background: rgba(5, 5, 5, 0.85);
-  color: #fafafa;
+/* 本文部分 */
+.up-card-body {
+  padding: 10px 12px 12px;
 }
 
-/* カード本体 */
-.ue-card-body {
-  padding: 12px 14px 12px;
-}
-
-.ue-card-title {
-  font-size: 15px;
+.up-card-title {
+  font-size: 14px;
   font-weight: 600;
   margin-bottom: 4px;
 }
 
-.ue-card-meta {
+.up-card-meta {
   font-size: 11px;
-  color: #a3a3a3;
-  margin-bottom: 6px;
+  color: #777;
+  margin-bottom: 4px;
 }
 
-.ue-card-desc {
+.up-card-desc {
   font-size: 12px;
-  color: #d4d4d4;
+  color: #555;
   line-height: 1.5;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
-/* カード下部（価格＋ボタン） */
-.ue-card-footer {
+/* 下段（価格＋ボタン） */
+.up-card-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
 }
 
-.ue-price {
+.up-price {
   font-size: 13px;
   font-weight: 600;
 }
 
-.ue-order-button {
+.up-order-btn {
   font-size: 11px;
   padding: 7px 10px;
   border-radius: 999px;
   border: none;
-  background: #06c167;
-  color: #050505;
+  background: #111;
+  color: #fff;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
 }
-.ue-order-button:hover {
-  filter: brightness(1.05);
+
+.up-order-btn:hover {
+  opacity: 0.9;
 }
 
-/* ページネーション */
-.ue-pagination {
-  margin: 24px 0 8px;
+/* 「データなし」メッセージ */
+.up-empty {
+  margin-top: 32px;
   text-align: center;
+  color: #777;
 }
 
-.ue-pagination .page-numbers {
-  display: inline-block;
-  margin: 0 4px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid #262626;
-  font-size: 12px;
+/* WP デフォルトフッターを少し薄く */
+.site-footer,
+footer {
+  font-size: 11px;
+  color: #999;
 }
 
-.ue-pagination .page-numbers.current {
-  background: #06c167;
-  border-color: #06c167;
-  color: #050505;
-}
+/* ---------------------------
+   スマホ調整
+--------------------------- */
 
-/* 「データなし」 */
-.ue-empty-text {
-  margin-top: 24px;
-  color: #a3a3a3;
-}
-
-/* スマホ向け微調整 */
 @media (max-width: 640px) {
-  .ue-app {
+  .up-app {
     padding: 12px 12px 80px;
   }
 
-  .ue-grid {
+  .up-header {
+    padding: 10px 16px;
+    margin: 0 -12px 8px;
+  }
+
+  .up-grid {
     grid-template-columns: 1fr;
   }
-}
 
-/* ====== 既存のフッターメニューを見えるようにする ====== */
-footer {
-  background: #ffffff;
-  color: #111111;
-}
-
-footer a,
-footer span,
-footer li {
-  color: #111111 !important;
-}
-
-
-
-
-
-/* ===== ライト／ダークの基本切り替え ===== */
-
-/* 初期値は light にする想定（JS がクラスを付ける） */
-body.light {
-  background: #ffffff;
-  color: #111111;
-}
-
-body.dark {
-  background: #050505;
-  color: #f8f8f8;
-}
-
-/* カードの背景もモードで変える */
-body.light .ue-card,
-body.light .uber-card {
-  background: #ffffff;
-  color: #111;
-  border: 1px solid #e5e5e5;
-}
-
-body.dark .ue-card,
-body.dark .uber-card {
-  background: #111111;
-  color: #f8f8f8;
-  border: 1px solid #181818;
-}
-
-/* モード切り替えボタン */
-.mode-btn {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 9999;
-  border: none;
-  border-radius: 999px;
-  padding: 8px 14px;
-  font-size: 16px;
-  cursor: pointer;
-  background: #06c167;
-  color: #050505;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-}
-
-/* フッターのタブメニュー文字が黒背景で消えないように */
-footer {
-  background: #ffffff;
-  color: #111111;
-}
-
-footer a,
-footer span,
-footer li {
-  color: #111111 !important;
+  .up-card-image-wrap {
+    height: 180px;
+  }
 }
