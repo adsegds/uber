@@ -5,14 +5,11 @@
 
 // テーマの基本セットアップ
 add_action('after_setup_theme', function () {
-    // アイキャッチ画像（商品サムネ用）
-    add_theme_support('post-thumbnails');
-
-    // タイトルタグ（<title>）をWPに任せる
-    add_theme_support('title-tag');
+    add_theme_support('post-thumbnails'); // アイキャッチ
+    add_theme_support('title-tag');       // <title> 自動
 });
 
-// 商品用カスタム投稿タイプ：item
+// 商品投稿タイプ item
 function up_register_item_post_type() {
     $labels = array(
         'name'          => '商品',
@@ -34,7 +31,7 @@ function up_register_item_post_type() {
 }
 add_action('init', 'up_register_item_post_type');
 
-// 商品カテゴリ用タクソノミー：item_category
+// 商品カテゴリ tax：item_category
 function up_register_item_category_taxonomy() {
     $labels = array(
         'name'          => '商品カテゴリ',
@@ -53,11 +50,11 @@ function up_register_item_category_taxonomy() {
 }
 add_action('init', 'up_register_item_category_taxonomy');
 
-// テーマのCSSだけ読み込む（JSはなし）
+// CSS 読み込み（ここが一番大事）
 function uber_pickup_assets() {
     wp_enqueue_style(
         'uber-style',
-        get_stylesheet_uri(),
+        get_template_directory_uri() . '/style.css', // ← ここで style.css を直指定
         array(),
         '1.0.0'
     );
