@@ -1,136 +1,113 @@
-<?php
-/**
- * メイン一覧ページ（Uber Eats 風）
- */
-get_header();
-?>
+<?php get_header(); ?>
 
-<div class="ue-app">
+<style>
+/* Uber Eats 風の黒背景 */
+body {
+    background-color: #000;
+    color: #fff;
+}
 
-  <!-- 上部ヘッダー -->
-  <header class="ue-header">
-    <div class="ue-header-left">
-      <div class="ue-logo-circle">L</div>
-      <div>
-        <div class="ue-store-name">南部店 PICKUP</div>
-        <div class="ue-store-sub">ローソン・テイクアウト専門</div>
-      </div>
-    </div>
-    <div class="ue-header-right">
-      <span class="ue-chip ue-chip-outline">開店中</span>
-    </div>
-  </header>
+/* コンテナ */
+.uber-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
-  <!-- 検索 -->
-  <section class="ue-search-section">
-    <form method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
-      <div class="ue-search-box">
-        <span class="ue-search-icon">🔍</span>
-        <input
-          type="text"
-          name="s"
-          class="ue-search-input"
-          placeholder="商品名・カテゴリで検索"
-          value="<?php echo esc_attr( get_search_query() ); ?>"
-        />
-      </div>
-    </form>
-  </section>
+/* 検索バー */
+.uber-search {
+    width: 100%;
+    padding: 15px;
+    border-radius: 25px;
+    border: none;
+    margin-bottom: 20px;
+}
 
-  <!-- カテゴリ（横スクロール） -->
-  <section class="ue-category-section">
-    <h2 class="ue-section-title">カテゴリ</h2>
-    <div class="ue-category-scroll">
-      <button class="ue-chip ue-chip-filled">すべて</button>
-      <button class="ue-chip">揚げ物</button>
-      <button class="ue-chip">ドリンク</button>
-      <button class="ue-chip">スイーツ</button>
-      <button class="ue-chip">おにぎり</button>
-      <button class="ue-chip">弁当</button>
-      <button class="ue-chip">アイス</button>
-    </div>
-  </section>
+/* カテゴリボタン */
+.uber-cat-btn {
+    background: #1DB954;
+    color: #fff;
+    padding: 8px 20px;
+    margin-right: 10px;
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 14px;
+}
 
-  <!-- 商品一覧 -->
-  <main class="ue-main">
-    <h2 class="ue-section-title">おすすめメニュー</h2>
+/* 商品カード */
+.uber-card {
+    background: #111;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start;
+}
 
-    <?php if ( have_posts() ) : ?>
-      <div class="ue-grid">
-        <?php while ( have_posts() ) : the_post(); ?>
+.uber-card img {
+    width: 120px;
+    height: 120px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-right: 15px;
+}
 
-          <article class="ue-card">
-            <a href="<?php the_permalink(); ?>" class="ue-card-inner">
-              <div class="ue-card-image-wrap">
-                <?php if ( has_post_thumbnail() ) : ?>
-                  <?php the_post_thumbnail( 'medium', [ 'class' => 'ue-card-image' ] ); ?>
-                <?php else : ?>
-                  <div class="ue-card-image ue-card-image--placeholder">
-                    <span>No Image</span>
-                  </div>
-                <?php endif; ?>
+.uber-card h3 {
+    margin: 0;
+    font-size: 18px;
+}
 
-                <div class="ue-badge ue-badge-pickup">店頭受け取り</div>
-              </div>
+.uber-tag {
+    display: inline-block;
+    background: #1DB954;
+    padding: 4px 10px;
+    color: #fff;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-top: 5px;
+}
+</style>
 
-              <div class="ue-card-body">
-                <h3 class="ue-card-title"><?php the_title(); ?></h3>
+<div class="uber-container">
 
-                <p class="ue-card-meta">
-                  <?php
-                  // カテゴリ名
-                  $cats = get_the_category();
-                  if ( $cats ) {
-                    echo esc_html( $cats[0]->name );
-                  } else {
-                    echo 'カテゴリなし';
-                  }
-                  ?>
-                </p>
+    <!-- 検索バー -->
+    <input type="text" class="uber-search" placeholder="商品名で検索">
 
-                <p class="ue-card-desc">
-                  <?php echo esc_html( wp_trim_words( get_the_excerpt(), 16 ) ); ?>
-                </p>
+    <!-- カテゴリボタン -->
+    <a class="uber-cat-btn">すべて</a>
+    <a class="uber-cat-btn">お弁当</a>
+    <a class="uber-cat-btn">飲料</a>
+    <a class="uber-cat-btn">スイーツ</a>
 
-                <div class="ue-card-footer">
-                  <?php
-                  // カスタムフィールド 'price' があれば表示
-                  $price = get_post_meta( get_the_ID(), 'price', true );
-                  if ( $price ) :
-                  ?>
-                    <span class="ue-price"><?php echo esc_html( $price ); ?>円</span>
-                  <?php else : ?>
-                    <span class="ue-price">価格は店頭表示</span>
-                  <?php endif; ?>
+    <br><br>
 
-                  <button type="button" class="ue-order-button">
-                    取り置きリストに追加
-                  </button>
-                </div>
-              </div>
+    <!-- 商品一覧（ループ） -->
+    <?php
+    if ( have_posts() ) :
+        while ( have_posts() ) : the_post();
+    ?>
+
+    <div class="uber-card">
+        <!-- アイキャッチ画像 -->
+        <?php if ( has_post_thumbnail() ) : ?>
+            <a href="<?php the_permalink(); ?>">
+                <?php the_post_thumbnail( 'medium' ); ?>
             </a>
-          </article>
+        <?php else: ?>
+            <div style="width:120px;height:120px;background:#333;border-radius:10px;margin-right:15px;"></div>
+        <?php endif; ?>
 
-        <?php endwhile; ?>
-      </div>
+        <div class="uber-info">
+            <h3><a href="<?php the_permalink(); ?>" style="color:#fff;"><?php the_title(); ?></a></h3>
 
-      <!-- ページネーション -->
-      <div class="ue-pagination">
-        <?php
-        the_posts_pagination( [
-          'mid_size'  => 1,
-          'prev_text' => '← 前へ',
-          'next_text' => '次へ →',
-        ] );
-        ?>
-      </div>
+            <span class="uber-tag">詳細・取り置き</span>
+        </div>
+    </div>
 
-    <?php else : ?>
-
-      <p class="ue-empty-text">まだ商品が登録されていません。</p>
-
-    <?php endif; ?>
-  </main>
+    <?php
+        endwhile;
+    endif;
+    ?>
 
 </div>
 
