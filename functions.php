@@ -47,9 +47,6 @@ function up_title($title = '') {
 }
 
 
-
-
-<?php
 // テーマのCSSとJSを読み込む
 function uber_theme_assets() {
     // メインのCSS
