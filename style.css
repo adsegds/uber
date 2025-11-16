@@ -102,3 +102,312 @@ a {
   padding: 8px 0;
   font-size: 13px;
 }
+
+
+
+/* ========== Uber Eats 風 基本レイアウト ========== */
+
+body {
+  background-color: #050505;
+  color: #f8f8f8;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* アプリ全体ラップ */
+.ue-app {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 16px 16px 96px;
+}
+
+/* ヘッダー */
+.ue-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.ue-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ue-logo-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background-color: #06c167;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #050505;
+}
+
+.ue-store-name {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.ue-store-sub {
+  font-size: 12px;
+  color: #a3a3a3;
+}
+
+.ue-header-right {
+  display: flex;
+  align-items: center;
+}
+
+/* チップ（バッジ） */
+.ue-chip {
+  border-radius: 999px;
+  padding: 6px 14px;
+  border: 1px solid #333;
+  background: #111;
+  color: #f5f5f5;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ue-chip-filled {
+  background: #06c167;
+  border-color: #06c167;
+  color: #050505;
+  font-weight: 600;
+}
+
+.ue-chip-outline {
+  border-color: #06c167;
+  color: #06c167;
+}
+
+/* 検索 */
+.ue-search-section {
+  margin-bottom: 16px;
+}
+
+.ue-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #111;
+  border-radius: 999px;
+  padding: 10px 16px;
+  border: 1px solid #222;
+}
+
+.ue-search-icon {
+  font-size: 14px;
+}
+
+.ue-search-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #f5f5f5;
+  width: 100%;
+  font-size: 14px;
+}
+
+.ue-search-input::placeholder {
+  color: #666;
+}
+
+/* セクションタイトル */
+.ue-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 12px 0 8px;
+}
+
+/* カテゴリ横スクロール */
+.ue-category-section {
+  margin-bottom: 4px;
+}
+
+.ue-category-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+/* スクロールバー細く */
+.ue-category-scroll::-webkit-scrollbar,
+.ue-main::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+.ue-category-scroll::-webkit-scrollbar-thumb,
+.ue-main::-webkit-scrollbar-thumb {
+  background-color: #333;
+  border-radius: 999px;
+}
+
+/* メインコンテンツ */
+.ue-main {
+  margin-top: 12px;
+}
+
+/* グリッド */
+.ue-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+/* カード */
+.ue-card {
+  background: #111;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid #181818;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, border-color 0.12s;
+}
+
+.ue-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.5);
+  border-color: #262626;
+}
+
+.ue-card-inner {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* カード画像 */
+.ue-card-image-wrap {
+  position: relative;
+  overflow: hidden;
+  height: 160px;
+}
+
+.ue-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ue-card-image--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e1e1e, #101010);
+  color: #666;
+  font-size: 12px;
+}
+
+/* バッジ */
+.ue-badge {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ue-badge-pickup {
+  background: rgba(5, 5, 5, 0.85);
+  color: #fafafa;
+}
+
+/* カード本体 */
+.ue-card-body {
+  padding: 12px 14px 12px;
+}
+
+.ue-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.ue-card-meta {
+  font-size: 11px;
+  color: #a3a3a3;
+  margin-bottom: 6px;
+}
+
+.ue-card-desc {
+  font-size: 12px;
+  color: #d4d4d4;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+/* フッター（価格＋ボタン） */
+.ue-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ue-price {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ue-order-button {
+  font-size: 11px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: none;
+  background: #06c167;
+  color: #050505;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ue-order-button:hover {
+  filter: brightness(1.05);
+}
+
+/* ページネーション */
+.ue-pagination {
+  margin: 24px 0 8px;
+  text-align: center;
+}
+
+.ue-pagination .page-numbers {
+  display: inline-block;
+  margin: 0 4px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #262626;
+  font-size: 12px;
+}
+
+.ue-pagination .page-numbers.current {
+  background: #06c167;
+  border-color: #06c167;
+  color: #050505;
+}
+
+/* 「データなし」 */
+.ue-empty-text {
+  margin-top: 24px;
+  color: #a3a3a3;
+}
+
+/* スマホ向け微調整 */
+@media (max-width: 640px) {
+  .ue-app {
+    padding: 12px 12px 80px;
+  }
+
+  .ue-grid {
+    grid-template-columns: 1fr;
+  }
+}
