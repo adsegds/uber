@@ -1,8 +1,13 @@
-<?php get_header(); ?>
+<?php
+/**
+ * フロントページ（Uber Eats 風トップ）
+ */
+get_header();
+?>
 
 <div class="up-shell">
 
-  <!-- グローバルヘッダー（PC/スマホ共通ベース） -->
+  <!-- 青いヘッダー -->
   <header class="up-global-header">
     <div class="up-global-inner">
       <div class="up-global-left">
@@ -28,14 +33,15 @@
     </div>
   </header>
 
-  <!-- レイアウト：PCでは 左サイドバー + 右コンテンツ -->
+  <!-- 2カラムレイアウト -->
   <div class="up-layout">
 
-    <!-- サイドバー -->
+    <!-- 左：カテゴリーサイドバー -->
     <aside class="up-sidebar">
       <div class="up-sidebar-title">カテゴリー</div>
       <nav class="up-sidebar-nav">
-        <a href="<?php echo esc_url( get_post_type_archive_link( 'item' ) ); ?>" class="up-sidebar-link up-sidebar-link--all">
+        <a href="<?php echo esc_url( get_post_type_archive_link( 'item' ) ); ?>"
+           class="up-sidebar-link up-sidebar-link--all">
           すべての商品
         </a>
         <?php
@@ -58,10 +64,10 @@
       </nav>
     </aside>
 
-    <!-- メインコンテンツ -->
+    <!-- 右：メインコンテンツ -->
     <main class="up-main-area">
 
-      <!-- バナーゾーン（ダミー） -->
+      <!-- 上部バナー（ダミー） -->
       <section class="up-banner-row">
         <div class="up-banner-card up-banner-card--orange">
           <div class="up-banner-title">Ponta IDで特典GET</div>
@@ -69,7 +75,7 @@
         </div>
         <div class="up-banner-card up-banner-card--blue">
           <div class="up-banner-title">生活応援商品いろいろ</div>
-          <div class="up-banner-text">からあげクン・弁当・飲料などまとめて取り置き。</div>
+          <div class="up-banner-text">からあげクン・弁当・飲料などをまとめて取り置き。</div>
         </div>
         <div class="up-banner-card up-banner-card--green">
           <div class="up-banner-title">深夜のご褒美セット</div>
@@ -78,7 +84,7 @@
       </section>
 
       <?php
-      // カテゴリ一覧を取得
+      // カテゴリー一覧（さっき取得できてなければもう一回）
       if ( ! isset( $terms ) || is_wp_error( $terms ) ) {
         $terms = get_terms(
           array(
@@ -91,7 +97,7 @@
       if ( ! is_wp_error( $terms ) && $terms ) :
         foreach ( $terms as $term ) :
 
-          // 各カテゴリの商品を取得
+          // 各カテゴリの商品を最大10件取得
           $items_query = new WP_Query(
             array(
               'post_type'      => 'item',
@@ -137,13 +143,9 @@
 
                     <div class="up-product-body">
                       <h3 class="up-product-name"><?php the_title(); ?></h3>
-                      <div class="up-product-meta">
-                        ￥--- / 1点
-                      </div>
+                      <div class="up-product-meta">￥--- / 1点</div>
                       <div class="up-product-footer">
-                        <a href="<?php the_permalink(); ?>" class="up-product-plus">
-                          ＋
-                        </a>
+                        <a href="<?php the_permalink(); ?>" class="up-product-plus">＋</a>
                       </div>
                     </div>
                   </article>
@@ -154,15 +156,14 @@
               </div>
             </section>
             <?php
-          endif;
+          endif; // have posts
         endforeach;
       else :
         ?>
-        <p class="up-empty">現在、商品カテゴリが登録されていません。</p>
+        <p class="up-empty">現在、商品カテゴリーが登録されていません。</p>
       <?php endif; ?>
 
-    </main><!-- /.up-main-area -->
-
+    </main>
   </div><!-- /.up-layout -->
 
 </div><!-- /.up-shell -->
