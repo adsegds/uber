@@ -2,13 +2,11 @@
 
 <div class="up-shell">
 
-  <!-- 青いグローバルヘッダー -->
   <?php get_template_part('parts/global-header'); ?>
 
-  <!-- PC 2カラムレイアウト開始 -->
   <div class="up-layout">
 
-    <!-- 左サイドバー（全ページ共通） -->
+    <!-- 左サイドバー（常に表示／スマホはCSSで折りたたみ） -->
     <aside class="up-sidebar">
       <div class="up-sidebar-title">カテゴリー</div>
       <nav class="up-sidebar-nav">
@@ -18,21 +16,21 @@
         $terms = get_terms('item_category');
         if (!empty($terms) && !is_wp_error($terms)) :
           foreach ($terms as $term) : ?>
-            <a class="up-sidebar-link" 
-               href="<?php echo get_term_link($term); ?>">
+            <a class="up-sidebar-link" href="<?php echo get_term_link($term); ?>">
               <?php echo $term->name; ?>
             </a>
         <?php endforeach; endif; ?>
       </nav>
     </aside>
 
-    <!-- メインコンテンツ -->
+    <!-- メイン -->
     <main class="up-main-area up-main--detail">
 
-      <div class="up-detail-layout">
+      <!-- 商品詳細 横最大レイアウト -->
+      <div class="up-detail-wide">
 
-        <!-- 商品カード（左画像・右本文） -->
-        <div class="up-detail-card">
+        <!-- 画像 ＋ 本文 横並び -->
+        <div class="up-detail-flex">
 
           <!-- 画像 -->
           <div class="up-detail-image-wrap">
@@ -52,12 +50,8 @@
             <h1 class="up-detail-title"><?php the_title(); ?></h1>
 
             <div class="up-detail-price-row">
-              <span class="up-detail-price">
-                ¥<?php echo get_post_meta(get_the_ID(), 'price', true); ?>
-              </span>
-              <span class="up-detail-qty">
-                数量：<?php echo get_post_meta(get_the_ID(), 'qty', true); ?>（デモ）
-              </span>
+              <span class="up-detail-price">¥<?php echo get_post_meta(get_the_ID(), 'price', true); ?></span>
+              <span class="up-detail-qty">数量：<?php echo get_post_meta(get_the_ID(), 'qty', true); ?>（デモ）</span>
             </div>
 
             <div class="up-detail-desc">
@@ -65,51 +59,75 @@
             </div>
 
             <div class="up-detail-order-wrap">
-              <button class="up-detail-order-btn">
-                注文に 1 商品追加する（ダミー）
-              </button>
-              <p class="up-detail-note">
-                ※ 現在はデモモードです
-              </p>
+              <button class="up-detail-order-btn">注文に 1 商品追加する（ダミー）</button>
+              <p class="up-detail-note">※ 現在はデモモードです</p>
             </div>
           </div>
+
         </div>
       </div>
 
-      <!-- 類似商品 -->
-      <div class="up-related-section">
-        <h2 class="up-related-heading">類似商品</h2>
+      <!-- ========================= -->
+      <!--   FANZA風 類似商品       -->
+      <!-- ========================= -->
+      <div class="up-related-area">
+        <h2 class="up-related-title">類似商品</h2>
 
-        <div class="up-related-grid">
+        <div class="up-related-scroll">
+
           <?php
-          $related = get_posts([
-            'post_type' => 'item',
-            'posts_per_page' => 4,
-            'exclude' => [get_the_ID()]
-          ]);
+          $terms = get_the_terms($post->ID, 'item_category');
 
-          foreach ($related as $post) :
-            setup_postdata($post); ?>
-            <a class="up-related-card" href="<?php the_permalink(); ?>">
-              <div class="up-related-image-wrap">
-                <?php if (has_post_thumbnail()) : ?>
-                  <img class="up-related-image" src="<?php the_post_thumbnail_url('medium'); ?>" />
-                <?php else : ?>
-                  <div class="up-related-image--placeholder">画像なし</div>
-                <?php endif; ?>
-              </div>
-              <div class="up-related-body">
-                <div class="up-related-title"><?php the_title(); ?></div>
-                <div class="up-related-price">¥<?php echo get_post_meta(get_the_ID(), 'price', true); ?></div>
-              </div>
-            </a>
-          <?php endforeach; wp_reset_postdata(); ?>
+          if ($terms) :
+            $term_ids = wp_list_pluck($terms, 'term_id');
+
+            $related_query = new WP_Query([
+              'post_type' => 'item',
+              'posts_per_page' => 30,
+              'post__not_in' => [get_the_ID()],
+              'tax_query' => [
+                [
+                  'taxonomy' => 'item_category',
+                  'field' => 'term_id',
+                  'terms' => $term_ids,
+                ]
+              ]
+            ]);
+
+            if ($related_query->have_posts()) :
+              while ($related_query->have_posts()) :
+                $related_query->the_post();
+          ?>
+
+                <a class="up-related-card" href="<?php the_permalink(); ?>">
+
+                  <div class="up-related-image-wrap">
+                    <?php if (has_post_thumbnail()) : ?>
+                      <img class="up-related-image" src="<?php the_post_thumbnail_url('medium'); ?>">
+                    <?php else : ?>
+                      <img class="up-related-image" src="https://placehold.jp/aaaaaa/ffffff/300x400.png?text=No+Image">
+                    <?php endif; ?>
+                  </div>
+
+                  <div class="up-related-body">
+                    <div class="up-related-name"><?php the_title(); ?></div>
+                    <div class="up-related-price">¥<?php echo get_post_meta(get_the_ID(), 'price', true); ?></div>
+                  </div>
+
+                </a>
+
+          <?php
+              endwhile;
+              wp_reset_postdata();
+            endif;
+          endif;
+          ?>
+
         </div>
       </div>
 
     </main>
   </div>
-
 </div>
 
 <?php get_footer(); ?>
