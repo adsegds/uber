@@ -1,141 +1,115 @@
-<?php
-/**
- * 商品詳細ページ (Uber Eats 風)
- */
+<?php get_header(); ?>
 
-get_header();
-?>
+<div class="up-shell">
 
-<div class="up-app">
+  <!-- 青いグローバルヘッダー -->
+  <?php get_template_part('parts/global-header'); ?>
 
-  <!-- ヘッダー（一覧と同じ） -->
-  <header class="up-header">
-    <div class="up-header-left">
-      <div class="up-logo-circle">L</div>
-      <div>
-        <div class="up-store-name"><?php bloginfo('name'); ?></div>
-        <div class="up-store-sub">店頭受け取り専用・決済はレジで</div>
-      </div>
-    </div>
-    <div class="up-header-right">
-      PICKUP
-    </div>
-  </header>
+  <!-- PC 2カラムレイアウト開始 -->
+  <div class="up-layout">
 
-  <main class="up-main up-main--detail">
+    <!-- 左サイドバー（全ページ共通） -->
+    <aside class="up-sidebar">
+      <div class="up-sidebar-title">カテゴリー</div>
+      <nav class="up-sidebar-nav">
+        <a class="up-sidebar-link up-sidebar-link--all" href="<?php echo home_url(); ?>">すべての商品</a>
 
-    <?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
+        <?php
+        $terms = get_terms('item_category');
+        if (!empty($terms) && !is_wp_error($terms)) :
+          foreach ($terms as $term) : ?>
+            <a class="up-sidebar-link" 
+               href="<?php echo get_term_link($term); ?>">
+              <?php echo $term->name; ?>
+            </a>
+        <?php endforeach; endif; ?>
+      </nav>
+    </aside>
 
-      <!-- ▼ 商品メインカード（左：画像 / 右：情報） -->
-      <article class="up-card up-detail-card">
-        <div class="up-detail-image-wrap">
-          <?php if ( has_post_thumbnail() ) : ?>
-            <?php the_post_thumbnail( 'large', array( 'class' => 'up-detail-image' ) ); ?>
-          <?php else : ?>
-            <div class="up-card-image up-card-image--placeholder">
-              画像なし
+    <!-- メインコンテンツ -->
+    <main class="up-main-area up-main--detail">
+
+      <div class="up-detail-layout">
+
+        <!-- 商品カード（左画像・右本文） -->
+        <div class="up-detail-card">
+
+          <!-- 画像 -->
+          <div class="up-detail-image-wrap">
+            <?php if (has_post_thumbnail()) : ?>
+              <img class="up-detail-image" src="<?php the_post_thumbnail_url('large'); ?>" alt="">
+            <?php else : ?>
+              <div class="up-card-image--placeholder">画像なし</div>
+            <?php endif; ?>
+          </div>
+
+          <!-- 本文 -->
+          <div class="up-detail-body">
+            <div class="up-detail-category">
+              <?php echo get_the_term_list(get_the_ID(), 'item_category'); ?>
             </div>
-          <?php endif; ?>
-        </div>
 
-        <div class="up-detail-body">
+            <h1 class="up-detail-title"><?php the_title(); ?></h1>
+
+            <div class="up-detail-price-row">
+              <span class="up-detail-price">
+                ¥<?php echo get_post_meta(get_the_ID(), 'price', true); ?>
+              </span>
+              <span class="up-detail-qty">
+                数量：<?php echo get_post_meta(get_the_ID(), 'qty', true); ?>（デモ）
+              </span>
+            </div>
+
+            <div class="up-detail-desc">
+              <?php the_content(); ?>
+            </div>
+
+            <div class="up-detail-order-wrap">
+              <button class="up-detail-order-btn">
+                注文に 1 商品追加する（ダミー）
+              </button>
+              <p class="up-detail-note">
+                ※ 現在はデモモードです
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 類似商品 -->
+      <div class="up-related-section">
+        <h2 class="up-related-heading">類似商品</h2>
+
+        <div class="up-related-grid">
           <?php
-            $terms = get_the_terms( get_the_ID(), 'item_category' );
-            if ( $terms && ! is_wp_error( $terms ) ) {
-              $names = wp_list_pluck( $terms, 'name' );
-              echo '<div class="up-detail-category">' . esc_html( implode( ' / ', $names ) ) . '</div>';
-            } else {
-              echo '<div class="up-detail-category">カテゴリ未設定</div>';
-            }
-          ?>
+          $related = get_posts([
+            'post_type' => 'item',
+            'posts_per_page' => 4,
+            'exclude' => [get_the_ID()]
+          ]);
 
-          <h1 class="up-detail-title"><?php the_title(); ?></h1>
-
-          <div class="up-detail-price-row">
-            <div class="up-detail-price">￥---</div>
-            <div class="up-detail-qty">数量：1（ダミー）</div>
-          </div>
-
-          <div class="up-detail-desc">
-            <?php the_content(); ?>
-          </div>
-
-          <div class="up-detail-order-wrap">
-            <button class="up-detail-order-btn">
-              注文に 1 個追加する（ダミー）
-            </button>
-            <p class="up-detail-note">
-              ※ 実際の注文には対応していません。これはデザイン用のダミーボタンです。
-            </p>
-          </div>
+          foreach ($related as $post) :
+            setup_postdata($post); ?>
+            <a class="up-related-card" href="<?php the_permalink(); ?>">
+              <div class="up-related-image-wrap">
+                <?php if (has_post_thumbnail()) : ?>
+                  <img class="up-related-image" src="<?php the_post_thumbnail_url('medium'); ?>" />
+                <?php else : ?>
+                  <div class="up-related-image--placeholder">画像なし</div>
+                <?php endif; ?>
+              </div>
+              <div class="up-related-body">
+                <div class="up-related-title"><?php the_title(); ?></div>
+                <div class="up-related-price">¥<?php echo get_post_meta(get_the_ID(), 'price', true); ?></div>
+              </div>
+            </a>
+          <?php endforeach; wp_reset_postdata(); ?>
         </div>
-      </article>
-      <!-- ▲ 商品メインカードここまで -->
+      </div>
 
-      <?php
-      // ▼ 類似商品クエリ（同じ item_category の他商品）
-      $term_ids = $terms && ! is_wp_error( $terms )
-        ? wp_list_pluck( $terms, 'term_id' )
-        : array();
+    </main>
+  </div>
 
-      if ( ! empty( $term_ids ) ) :
-        $related_args = array(
-          'post_type'      => 'item',
-          'posts_per_page' => 12, // 類似商品をいっぱい並べる
-          'post__not_in'   => array( get_the_ID() ),
-          'tax_query'      => array(
-            array(
-              'taxonomy' => 'item_category',
-              'field'    => 'term_id',
-              'terms'    => $term_ids,
-            ),
-          ),
-        );
-
-        $related_query = new WP_Query( $related_args );
-        if ( $related_query->have_posts() ) :
-      ?>
-
-        <!-- ▼ 類似商品セクション（ページ幅いっぱいにグリッド） -->
-        <section class="up-related-section">
-          <h2 class="up-related-heading">類似商品</h2>
-
-          <div class="up-related-grid">
-            <?php while ( $related_query->have_posts() ) : $related_query->the_post(); ?>
-              <a class="up-related-card" href="<?php the_permalink(); ?>">
-                <div class="up-related-image-wrap">
-                  <?php if ( has_post_thumbnail() ) : ?>
-                    <?php the_post_thumbnail( 'medium', array( 'class' => 'up-related-image' ) ); ?>
-                  <?php else : ?>
-                    <div class="up-related-image up-related-image--placeholder">
-                      画像なし
-                    </div>
-                  <?php endif; ?>
-                </div>
-                <div class="up-related-body">
-                  <div class="up-related-title"><?php the_title(); ?></div>
-                  <div class="up-related-price">￥---</div>
-                </div>
-              </a>
-            <?php endwhile; ?>
-          </div>
-        </section>
-        <!-- ▲ 類似商品セクションここまで -->
-
-      <?php
-        wp_reset_postdata();
-        endif;
-      endif;
-      // ▲ 類似商品クエリ終わり
-      ?>
-
-      <p class="up-detail-back">
-        <a href="<?php echo esc_url( home_url( '/' ) ); ?>">← 商品一覧に戻る</a>
-      </p>
-
-    <?php endwhile; endif; ?>
-
-  </main>
 </div>
 
 <?php get_footer(); ?>
