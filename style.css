@@ -653,3 +653,53 @@ footer {
     min-width: 140px;
   }
 }
+
+
+
+
+
+
+/* ==========
+   カテゴリ「すべて表示 →」ページ用
+   (taxonomy-item_category.php)
+========== */
+
+.up-sidebar-link--active {
+  background: #e3eefc;
+  font-weight: 600;
+}
+
+.up-cat-header {
+  margin-bottom: 16px;
+}
+
+.up-cat-title {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.up-cat-desc {
+  margin: 0;
+  font-size: 13px;
+  color: #555;
+}
+
+/* グリッドレイアウト：PC 4列ベース */
+.up-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* grid内なので min-width を殺しておく */
+.up-product-card--cat {
+  min-width: 0;
+}
+
+/* スマホでは2列 */
+@media (max-width: 768px) {
+  .up-cat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
