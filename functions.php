@@ -1,85 +1,76 @@
 <?php
 /**
- * Uber Pickup Theme functions
+ * テーマの基本設定
  */
 
-// テーマの基本設定
-function uber_pickup_setup() {
-  // タイトルタグ自動
-  add_theme_support( 'title-tag' );
+// アイキャッチ
+add_theme_support( 'post-thumbnails' );
 
-  // アイキャッチ画像
-  add_theme_support( 'post-thumbnails' );
-
-  // HTML5 サポート
-  add_theme_support( 'html5', array( 'search-form', 'gallery', 'caption' ) );
+// style.css を読み込み
+function up_enqueue_assets() {
+    wp_enqueue_style( 'up-style', get_stylesheet_uri(), array(), '1.0.0' );
 }
-add_action( 'after_setup_theme', 'uber_pickup_setup' );
+add_action( 'wp_enqueue_scripts', 'up_enqueue_assets' );
 
-// CSS 読み込み
-function uber_pickup_enqueue_assets() {
-  wp_enqueue_style(
-    'uber-pickup-style',
-    get_stylesheet_uri(),
-    array(),
-    '1.0.0'
-  );
+
+// ▼ 商品用カスタム投稿タイプ item
+function up_register_item_cpt() {
+    $labels = array(
+        'name'               => '商品',
+        'singular_name'      => '商品',
+        'menu_name'          => '商品',
+        'name_admin_bar'     => '商品',
+        'add_new'            => '新規追加',
+        'add_new_item'       => '商品を追加',
+        'new_item'           => '新規商品',
+        'edit_item'          => '商品を編集',
+        'view_item'          => '商品を表示',
+        'all_items'          => 'すべての商品',
+        'search_items'       => '商品を検索',
+        'not_found'          => '商品が見つかりません',
+        'not_found_in_trash' => 'ゴミ箱に商品はありません',
+    );
+
+    $args = array(
+        'labels'             => $labels,
+        'public'             => true,
+        'show_in_menu'       => true,
+        'menu_position'      => 5,
+        'supports'           => array( 'title', 'editor', 'thumbnail' ),
+        'has_archive'        => true,
+        'rewrite'            => array( 'slug' => 'items' ),
+        'show_in_rest'       => true,
+    );
+
+    register_post_type( 'item', $args );
 }
-add_action( 'wp_enqueue_scripts', 'uber_pickup_enqueue_assets' );
+add_action( 'init', 'up_register_item_cpt' );
 
-// 商品用カスタム投稿タイプ「item」とタクソノミー「item_category」
-function uber_pickup_register_post_type() {
 
-  // 投稿タイプ item
-  $labels = array(
-    'name'          => '商品',
-    'singular_name' => '商品',
-    'add_new'       => '新規商品を追加',
-    'add_new_item'  => '新規商品を追加',
-    'edit_item'     => '商品を編集',
-    'new_item'      => '新しい商品',
-    'view_item'     => '商品を表示',
-    'search_items'  => '商品を検索',
-    'not_found'     => '商品が見つかりませんでした',
-    'menu_name'     => '商品',
-  );
+// ▼ 商品カテゴリー item_category
+function up_register_item_category_tax() {
+    $labels = array(
+        'name'          => '商品カテゴリー',
+        'singular_name' => '商品カテゴリー',
+        'search_items'  => 'カテゴリーを検索',
+        'all_items'     => 'すべてのカテゴリー',
+        'edit_item'     => 'カテゴリーを編集',
+        'update_item'   => 'カテゴリーを更新',
+        'add_new_item'  => '新規カテゴリーを追加',
+        'new_item_name' => '新しいカテゴリー名',
+        'menu_name'     => '商品カテゴリー',
+    );
 
-  register_post_type(
-    'item',
-    array(
-      'labels'       => $labels,
-      'public'       => true,
-      'has_archive'  => true,
-      'menu_icon'    => 'dashicons-cart',
-      'supports'     => array( 'title', 'editor', 'thumbnail' ),
-      'rewrite'      => array( 'slug' => 'item' ),
-      'show_in_rest' => true,
-    )
-  );
+    $args = array(
+        'hierarchical'      => true,
+        'labels'            => $labels,
+        'show_ui'           => true,
+        'show_admin_column' => true,
+        'query_var'         => true,
+        'rewrite'           => array( 'slug' => 'item-category' ),
+        'show_in_rest'      => true,
+    );
 
-  // タクソノミー item_category
-  $tax_labels = array(
-    'name'          => '商品カテゴリ',
-    'singular_name' => '商品カテゴリ',
-    'search_items'  => 'カテゴリを検索',
-    'all_items'     => 'すべてのカテゴリ',
-    'edit_item'     => 'カテゴリを編集',
-    'update_item'   => 'カテゴリを更新',
-    'add_new_item'  => '新規カテゴリを追加',
-    'new_item_name' => '新規カテゴリ名',
-    'menu_name'     => '商品カテゴリ',
-  );
-
-  register_taxonomy(
-    'item_category',
-    'item',
-    array(
-      'labels'       => $tax_labels,
-      'hierarchical' => true,
-      'public'       => true,
-      'rewrite'      => array( 'slug' => 'item-category' ),
-      'show_in_rest' => true,
-    )
-  );
+    register_taxonomy( 'item_category', array( 'item' ), $args );
 }
-add_action( 'init', 'uber_pickup_register_post_type' );
+add_action( 'init', 'up_register_item_category_tax' );
