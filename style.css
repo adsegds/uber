@@ -1033,3 +1033,70 @@ footer {
     width: calc(50% - 8px); /* 2列 */
   }
 }
+
+
+
+
+
+
+
+
+
+/* ===============================
+   FANZA風：横ギチギチ似た商品
+=============================== */
+
+.up-related-list-fanza {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+}
+
+.up-related-card-fanza {
+  width: calc(16.66% - 12px); /* PC6列 */
+  min-width: 150px;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  transition: 0.2s;
+}
+
+.up-related-card-fanza:hover {
+  transform: translateY(-3px);
+}
+
+.up-related-card-fanza img {
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  background: #eee;
+}
+
+.up-related-card-fanza .title {
+  font-size: 13px;
+  padding: 6px 8px 0;
+  height: 38px;
+  overflow: hidden;
+}
+
+.up-related-card-fanza .price {
+  padding: 4px 8px 10px;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+/* responsive */
+@media (max-width: 1280px) {
+  .up-related-card-fanza { width: calc(20% - 12px); }
+}
+@media (max-width: 1024px) {
+  .up-related-card-fanza { width: calc(25% - 12px); }
+}
+@media (max-width: 768px) {
+  .up-related-card-fanza { width: calc(33.3% - 12px); }
+}
+@media (max-width: 480px) {
+  .up-related-card-fanza { width: calc(50% - 8px); }
+}
