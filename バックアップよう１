@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>夜食取り置き | 南部町ローソン</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f5;
+      color: #111;
+    }
+
+    .app-shell {
+  width: 100%;          /* 画面いっぱい */
+  max-width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f5f5f5;
+}
+
+
+
+    
+    
+    /* ========= Uber風ヘッダー ========= */
+    .app-header {
+      background: #ffffff;
+      padding: 10px 14px 8px;
+      border-bottom: 1px solid #eee;
+    }
+    .header-row-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .header-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .header-sub {
+      font-size: 11px;
+      color: #666;
+    }
+    .header-chip {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid #eee;
+      color: #333;
+    }
+
+    /* 疑似「配達先」バー */
+    .header-location-bar {
+      margin-bottom: 4px;
+    }
+    .location-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #f3f3f3;
+      font-size: 12px;
+      color: #333;
+    }
+    .location-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #06c167; /* Uberのグリーン寄せ */
+    }
+    .header-note {
+      font-size: 11px;
+      color: #999;
+      margin-top: 4px;
+    }
+
+    .cart-button {
+      border: none;
+      background: #111;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: #fff;
+      cursor: pointer;
+      position: relative;
+    }
+    .cart-count-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      font-size: 11px;
+      background: #06c167;
+      color: #111;
+      border-radius: 999px;
+      padding: 1px 6px;
+      font-weight: 700;
+    }
+
+    /* ========= カテゴリチップ ========= */
+    .category-bar-wrap {
+      background: #ffffff;
+      padding: 0 0 6px;
+      border-bottom: 1px solid #eee;
+    }
+    .category-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 6px 12px 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .category-tabs::-webkit-scrollbar {
+      display: none;
+    }
+    .category-tab {
+      flex-shrink: 0;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      border: 1px solid #ddd;
+      background: #fff;
+      color: #333;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .category-tab.active {
+      border-color: #111;
+      background: #111;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* ========= メイン ========= */
+    .app-main {
+      padding: 10px 12px 140px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    /* Uber風商品カード：左テキスト / 右サムネ */
+    .item-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.item-card {
+  display: flex;
+  flex-direction: column;   /* ← 横並び → 縦並びに変更 */
+  gap: 8px;
+  padding: 10px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+/* カード上部の写真エリア（カード幅いっぱい） */
+.item-thumb {
+  width: 100%;
+  height: 110px;
+  border-radius: 12px;
+  background: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #777;
+}
+
+/* テキスト部分を縦積み */
+.item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+
+    
+    .item-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    .item-meta {
+      font-size: 11px;
+      color: #777;
+      line-height: 1.4;
+      margin-bottom: 4px;
+    }
+    .item-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+    }
+    .item-price-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .item-tag {
+      font-size: 11px;
+      color: #555;
+    }
+    .item-price {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .item-thumb {
+      width: 96px;
+      height: 96px;
+      border-radius: 14px;
+      background: #e4e4e4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #777;
+      flex-shrink: 0;
+    }
+    .item-add-btn {
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 6px 12px;
+      border: none;
+      cursor: pointer;
+      background: #111;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* ========= カート画面 ========= */
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .cart-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+/* Uber風カート行 */
+.cart-row {
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 4px;
+}
+
+.cart-row-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.cart-row-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.cart-row-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* − / ＋ の丸ボタン */
+.cart-circle-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: #111;
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ゴミ箱ボタン */
+.cart-icon-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.cart-qty {
+  min-width: 16px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.cart-row-price {
+  margin-top: 6px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+    
+    .cart-total {
+      margin-top: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .form-group {
+      margin-top: 10px;
+    }
+    .form-label {
+      font-size: 12px;
+      margin-bottom: 3px;
+      display: block;
+    }
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: 7px 9px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+    }
+
+    /* ========= 完了画面 ========= */
+    .complete-text {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ========= 下カートバー（Uberの注文バー風） ========= */
+    .cart-bar {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 70px;
+      width: 100%;
+      max-width: 480px;
+      padding: 0 10px;
+      pointer-events: none;
+    }
+    .cart-bar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #111;
+      border-radius: 999px;
+      padding: 10px 14px;
+      color: #fff;
+      pointer-events: auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      cursor: pointer;
+    }
+    .cart-bar-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .cart-bar-line1 {
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .cart-bar-line2 {
+      font-size: 11px;
+      opacity: 0.9;
+    }
+    .cart-bar-btn {
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #06c167;
+      color: #111;
+      font-size: 12px;
+      font-weight: 700;
+      border: none;
+    }
+
+    /* 既存のフッターナビは控えめに */
+    .app-footer {
+      position: sticky;
+      bottom: 0;
+      background: #fff;
+      border-top: 1px solid #e3e3e3;
+      padding: 6px 10px 8px;
+      display: flex;
+      gap: 8px;
+    }
+    .footer-btn {
+      flex: 1;
+      padding: 8px;
+      border-radius: 999px;
+      border: none;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .footer-btn.secondary {
+      background: #f2f2f2;
+      color: #111;
+    }
+    .footer-btn.primary {
+      background: #111;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+
+
+/* ========= ホーム画面：横スクロール棚 ========= */
+.home-section {
+  margin-bottom: 18px;
+}
+
+.home-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2px 6px;
+}
+
+.home-section-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.home-section-arrow {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #f2f2f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* 横スクロール部分 */
+.home-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin-right: -12px;
+  padding-right: 12px;
+  scrollbar-width: none;
+}
+.home-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* 横カード */
+/* ホームの横スクロール棚用 */
+.home-scroll .home-item-card {
+  flex: 0 0 140px;
+}
+
+
+.home-thumb-wrap {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #eee;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #777;
+}
+
+
+.home-thumb-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;  /* 全体が収まる感じで表示 */
+}
+
+
+
+
+/* ＋ボタン（画像の右下） */
+.home-plus-btn {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.home-item-info {
+  margin-top: 8px;
+}
+
+.home-item-price {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.home-item-name {
+  font-size: 12px;
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* ========= 注文タブ画面 ========= */
+.order-tabs {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+.order-tab {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  background: #f7f7f7;
+  font-size: 13px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.order-tab.active {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+  font-weight: 600;
+}
+
+.order-panel {
+  padding-top: 10px;
+}
+
+.order-empty {
+  margin-top: 40px;
+  text-align: center;
+  color: #333;
+}
+
+.order-empty-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.order-empty-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.order-empty-text {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.order-empty-btn {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  background: #111;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+
+
+
+
+
+/* ===== 店舗マップ画面 ===== */
+.store-map {
+  margin-top: 8px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #ddd;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}
+
+.store-map iframe {
+  width: 100%;
+  height: 260px;   /* 好きな高さでOK（スマホ想定） */
+  border: 0;
+}
+
+.store-map-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 999px;
+  border: none;
+  background: #111;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+
+
+
+
+
+
+
+    
+/* ===== 店舗マップ画面（Storeタブ） ===== */
+.store-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.store-name {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.store-sub {
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+}
+
+.store-badge {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f3f3f3;
+  color: #333;
+}
+
+/* 「店頭受け取り専用」みたいなチップ列 */
+.store-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 10px;
+}
+
+.store-chip {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #f5f5f5;
+  border: 1px solid #eee;
+}
+
+/* アクセス・住所の行 */
+.store-info-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.store-info-label {
+  width: 60px;
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #666;
+}
+
+.store-info-text {
+  font-size: 12px;
+  color: #333;
+  line-height: 1.5;
+}
+
+/* 地図タイトル */
+.store-map-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 14px 0 6px;
+}
+
+
+
+
+
+
+/* カートボタンを画面右上に固定 */
+.cart-fixed {
+  position: fixed;
+  top: 10px;      /* 画面上からの距離 */
+  right: 16px;    /* 画面右からの距離 */
+  z-index: 1000;  /* ほかの要素より手前に出す */
+
+  /* ここから下は見た目の調整（今のデザインに合わせていじってOK） */
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+}
+
+
+
+/* ===== 飲料タブ：カテゴリ2ごとに縦セクションにする用 ===== */
+#itemList.grouped {
+  display: block;  /* もともとの grid を無効化して、縦並びにする */
+}
+
+.front-category-section {
+  margin-bottom: 24px;
+}
+
+.front-category-heading {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 4px 2px 8px;
+}
+
+.front-category-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+
+
+    
+
+    
+  </style>
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- ヘッダー -->
+  <header class="app-header">
+    <div class="header-row-top">
+      <div class="header-brand">
+        <div class="header-title">夜食取り置き</div>
+        <div class="header-sub">ローソン 南部の里店 ・ 店頭受け取り</div>
+      </div>
+      <button class="cart-button cart-fixed" id="cartButton">
+  カート
+  <span class="cart-count-badge" id="cartCount">0</span>
+</button>
+
+    </div>
+    <div class="header-location-bar">
+      <div class="location-pill">
+        <span class="location-dot"></span>
+        南部町（いまいる場所）で受け取り
+      </div>
+      <div class="header-note">※配達はなく、店頭での受け取り専用です</div>
+    </div>
+  </header>
+
+  <!-- カテゴリチップ -->
+  <div class="category-bar-wrap">
+    <div class="category-tabs" id="categoryTabs">
+      <button class="category-tab active" data-category="all">すべて</button>
+      <button class="category-tab" data-category="hotsnack">ホットスナック</button>
+      <button class="category-tab" data-category="drink">飲料</button>
+      <button class="category-tab" data-category="bread">パン</button>
+      <button class="category-tab" data-category="limited">弁当</button>
+      <button class="category-tab" data-category="limited">おにぎり</button>
+      <button class="category-tab" data-category="limited">カップ麺</button>
+      <button class="category-tab" data-category="limited">お酒</button>
+      <button class="category-tab" data-category="limited">取り置き限定</button>
+    </div>
+  </div>
+
+  <!-- メイン -->
+<main class="app-main">
+  <!-- ホーム（横スクロール棚） -->
+  <section id="homeView">
+    <div id="homeSections"></div>
+  </section>
+
+  <!-- カテゴリ別 商品一覧（縦一覧） -->
+  <section id="listView" class="hidden">
+    <div class="item-list" id="itemList"></div>
+  </section>
+
+
+
+
+
+  
+
+
+ <!-- 店舗マップ画面 -->
+<section id="storeView" class="hidden">
+  <div class="store-header">
+    <div>
+      <div class="store-name">ローソン 南部の里店</div>
+      <div class="store-sub">鳥取県西伯郡南部町〇〇〇〇</div>
+    </div>
+    <span class="store-badge">店舗情報</span>
+  </div>
+
+  <div class="store-chip-row">
+    <span class="store-chip">店頭受け取り専用</span>
+    <span class="store-chip">24時間営業</span>
+    <span class="store-chip">駐車場あり</span>
+  </div>
+
+  <div class="store-info-row">
+    <div class="store-info-label">アクセス</div>
+    <div class="store-info-text">
+      ○○交差点から車で約3分。<br>
+      ローソン南部の里店のレジでお受け取りください。
+    </div>
+  </div>
+
+  <div class="store-info-row">
+    <div class="store-info-label">住所</div>
+    <div class="store-info-text">
+      鳥取県西伯郡南部町〇〇〇〇<br>
+      （※ここは後で正式な住所に書き換えてOK）
+    </div>
+  </div>
+
+  <h3 class="store-map-title">地図</h3>
+  <div class="store-map">
+    <!-- ★ ここはあとで本物の Google Maps 埋め込みURLに差し替える -->
+    <iframe
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1150.2015564673732!2d133.36198123789052!3d35.37397514613947!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3556f0d37f112d25%3A0xe908f23c8fc4b3fd!2z44Ot44O844K944OzIOWNl-mDqOS8muimi-W6lw!5e0!3m2!1sja!2sjp!4v1763421679020!5m2!1sja!2sjp"
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+    ></iframe>
+  </div>
+
+  <button class="store-map-btn"
+    onclick="window.open('https://maps.google.com/?q=ローソン 南部の里店','_blank')">
+    Googleマップアプリで開く
+  </button>
+</section>
+
+
+
+
+
+  
+
+
+
+  
+
+  
+    <!-- カート＆注文フォーム -->
+    <section id="cartView" class="hidden">
+      <h2 class="section-title">カート</h2>
+      <div id="cartList" class="cart-list"></div>
+      <div id="cartTotal" class="cart-total"></div>
+
+      <div id="emptyCartMsg" style="font-size:13px;color:#777;">カートは空です。</div>
+
+      <div id="orderForm" class="hidden">
+        <div class="form-group">
+          <label class="form-label">お名前</label>
+          <input type="text" class="form-input" id="nameInput" placeholder="例）山田 太郎">
+        </div>
+        <div class="form-group">
+          <label class="form-label">電話番号</label>
+          <input type="tel" class="form-input" id="telInput" placeholder="090-xxxx-xxxx">
+        </div>
+        <div class="form-group">
+          <label class="form-label">受け取り時間</label>
+          <select class="form-select" id="timeSelect">
+            <option value="">選択してください</option>
+            <option value="18:00-19:00">18:00〜19:00</option>
+            <option value="19:00-20:00">19:00〜20:00</option>
+            <option value="20:00-21:00">20:00〜21:00</option>
+            <option value="21:00-22:00">21:00〜22:00</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- 完了画面 -->
+    <section id="completeView" class="hidden">
+      <h2 class="section-title">取り置き受付完了</h2>
+      <p id="completeMessage" class="complete-text"></p>
+      <p style="font-size:12px;color:#777;margin-top:6px;">
+        ※この画面をスクショしてレジでお見せください。
+      </p>
+    
+</section>
+
+    <!-- 注文タブ画面 -->
+    <section id="ordersView" class="hidden">
+      <h2 class="section-title">注文</h2>
+      
+
+      <div class="order-tabs">
+        <button class="order-tab active" data-tab="items">以前注文した商品</button>
+        <button class="order-tab" data-tab="history">以前の注文</button>
+      </div>
+
+      <!-- 以前注文した商品 -->
+      <div id="orderItemsPanel" class="order-panel">
+        <div class="order-empty">
+          <div class="order-empty-icon">🛒</div>
+          <div class="order-empty-title">まだご注文はありません</div>
+          <div class="order-empty-text">
+            ここで注文履歴を確認したり、<br>
+            お気に入りの商品を再注文できます。
+          </div>
+          <button class="order-empty-btn" id="startOrderBtn">注文を開始する</button>
+        </div>
+      </div>
+
+      <!-- 以前の注文 -->
+      <div id="orderHistoryPanel" class="order-panel hidden">
+        <div class="order-empty">
+          <div class="order-empty-icon">📄</div>
+          <div class="order-empty-title">まだご注文はありません</div>
+          <div class="order-empty-text">
+            取り置きした注文がここに表示されます。
+          </div>
+          <button class="order-empty-btn" id="startOrderBtn2">注文を開始する</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+
+
+
+
+
+
+
+
+
+
+  
+  <!-- 足元の簡易ナビ（サブ用） -->
+  <footer class="app-footer">
+    <button class="footer-btn secondary" id="toListBtn">メニュー一覧</button>
+    <button class="footer-btn secondary" id="storeBtn">Store</button>
+    <button class="footer-btn primary" id="orderBtn">注文</button>
+  </footer>
+
+  <!-- 下カートバー（Uber注文バー風） -->
+  <div class="cart-bar hidden" id="cartBar">
+    <div class="cart-bar-inner" id="cartBarInner">
+      <div class="cart-bar-left">
+        <div class="cart-bar-line1" id="cartBarLine1">0点 ・ ¥0</div>
+        <div class="cart-bar-line2">レジで受け取り</div>
+      </div>
+      <button class="cart-bar-btn">取り置きを確定</button>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+  // ================= Firebase 読み込み =================
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+
+
+
+// ==== カテゴリ2ごとにグループ分けするユーティリティ ====
+function groupByCategory2(items) {
+  const map = {};
+  for (const item of items) {
+    // category2Name が空なら「その他」にまとめる
+    const key = item.category2Name || "その他";
+    if (!map[key]) {
+      map[key] = [];
+    }
+    map[key].push(item);
+  }
+  return map; // { "炭酸": [item, item...], "大容量": [...], ... }
+}
+
+
+
+
+
+  
+
+
+  // ★ さっきメモした firebaseConfig をそのまま使う
+  const firebaseConfig = {
+    apiKey: "AIzaSyDYJrgcp9nhyNn2ZR-DMIn1C_Lk_Em6lZo",
+    authDomain: "myshop-nanbu.firebaseapp.com",
+    projectId: "myshop-nanbu",
+    storageBucket: "myshop-nanbu.firebasestorage.app",
+    messagingSenderId: "122308310474",
+    appId: "1:122308310474:web:44c10cd3709feb5eb14b33",
+    measurementId: "G-0WLVED7GQF"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  // ================== 商品データ ==================
+  // ここはもう Firestore から取るので、最初は空
+  let ITEMS = [];
+
+  // ホーム画面に出すカテゴリ（これは今まで通り固定でOK）
+  const CATEGORIES = [
+    { id: "hotsnack", label: "ホットスナック" },
+    { id: "drink",    label: "飲料" },
+    { id: "bread",    label: "パン" },
+    { id: "limited",  label: "取り置き限定" },
+  ];
+
+  // ============ DOM 取得 ============
+  const homeView        = document.getElementById("homeView");
+  const homeSectionsEl  = document.getElementById("homeSections");
+  const itemListEl      = document.getElementById("itemList");
+  const storeView       = document.getElementById("storeView");
+  const storeBtn        = document.getElementById("storeBtn");
+
+  const categoryTabsEl  = document.getElementById("categoryTabs");
+  const cartButton      = document.getElementById("cartButton");
+  const cartCountEl     = document.getElementById("cartCount");
+  const listView        = document.getElementById("listView");
+  const cartView        = document.getElementById("cartView");
+  const completeView    = document.getElementById("completeView");
+  const ordersView      = document.getElementById("ordersView");
+  const orderItemsPanel   = document.getElementById("orderItemsPanel");
+  const orderHistoryPanel = document.getElementById("orderHistoryPanel");
+  const cartListEl      = document.getElementById("cartList");
+  const cartTotalEl     = document.getElementById("cartTotal");
+  const emptyCartMsg    = document.getElementById("emptyCartMsg");
+  const orderForm       = document.getElementById("orderForm");
+  const toListBtn       = document.getElementById("toListBtn");
+  const orderBtn        = document.getElementById("orderBtn");
+  const nameInput       = document.getElementById("nameInput");
+  const telInput        = document.getElementById("telInput");
+  const timeSelect      = document.getElementById("timeSelect");
+  const completeMessage = document.getElementById("completeMessage");
+  const cartBar         = document.getElementById("cartBar");
+  const cartBarLine1    = document.getElementById("cartBarLine1");
+  const cartBarInner    = document.getElementById("cartBarInner");
+
+  let currentCategory = "all";
+  let cart = [];
+
+  // ============ Firestore から items を読む ============
+  async function loadItemsFromFirestore() {
+    try {
+      const snap = await getDocs(collection(db, "items"));
+      ITEMS = snap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      // データを取ってきたあとに UI を描画
+      renderHomeSections();
+      renderItems();
+      showHomeView();
+      updateCartView();
+    } catch (err) {
+      console.error("Firestore 読み込みエラー:", err);
+      alert("商品データの読み込みに失敗しました。時間をおいて再度お試しください。");
+    }
+  }
+
+ // ================= ホーム（横スクロール棚） =================
+function renderHomeSections() {
+  homeSectionsEl.innerHTML = "";
+
+  CATEGORIES.forEach(cat => {
+    // ★カテゴリ1の名前（category1Name）で絞り込む
+    const itemsForCat = ITEMS.filter(i => i.category1Name === cat.label);
+    if (!itemsForCat.length) return;
+
+    const section = document.createElement("section");
+    section.className = "home-section";
+
+    section.innerHTML = `
+      <div class="home-section-header">
+        <h3 class="home-section-title">${cat.label}</h3>
+        <button class="home-section-arrow" data-category="${cat.id}">➜</button>
+      </div>
+      <div class="home-scroll">
+        ${itemsForCat.map(item => `
+          <div class="home-item-card">
+            <div class="home-thumb-wrap">
+  <img src="${item.imageUrl}" alt="${item.name}">
+  <button class="home-plus-btn" data-id="${item.id}">＋</button>
+</div>
+
+            <div class="home-item-info">
+              <div class="home-item-price">¥${(item.price ?? 0).toLocaleString()}</div>
+              <div class="home-item-name">${item.name}</div>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    `;
+
+    homeSectionsEl.appendChild(section);
+  });
+
+  // ＋ボタン → カートに追加
+  homeSectionsEl.querySelectorAll(".home-plus-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-id");
+      addToCart(id);
+    });
+  });
+
+  // 矢印 → そのカテゴリの一覧へ
+  homeSectionsEl.querySelectorAll(".home-section-arrow").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const cat = btn.getAttribute("data-category");
+
+      document.querySelectorAll(".category-tab").forEach(tab => {
+        tab.classList.toggle(
+          "active",
+          tab.getAttribute("data-category") === cat
+        );
+      });
+
+      currentCategory = cat;
+      renderItems();
+      showListView();
+    });
+  });
+}
+
+
+
+
+// ===== 飲料タブ専用：カテゴリ2ごとにセクション分けして表示 =====
+function renderDrinkList() {
+  // レイアウトを「縦に段々」用に変更
+  itemListEl.classList.add("grouped");
+  itemListEl.innerHTML = "";
+
+  // ★カテゴリ1が「飲料」の商品だけ
+  const drinkItems = ITEMS.filter(
+    item => item.category1Name === "飲料"
+  );
+
+  if (!drinkItems.length) {
+    itemListEl.innerHTML = `<p class="order-empty-text">飲料の商品がありません。</p>`;
+    return;
+  }
+
+  // カテゴリ2でグループ分け
+  const groups = groupByCategory2(drinkItems); // { "炭酸": [...], "コーヒー": [...], ... }
+  const sectionNames = Object.keys(groups).sort();
+
+  sectionNames.forEach(sectionName => {
+    const sectionEl = document.createElement("section");
+    sectionEl.className = "front-category-section";
+
+    sectionEl.innerHTML = `
+      <h2 class="front-category-heading">${sectionName}</h2>
+      <div class="front-category-row">
+        ${groups[sectionName].map(item => `
+          <div class="home-item-card">
+            <div class="home-thumb-wrap">
+  <img src="${item.imageUrl}" alt="${item.name}">
+  <button class="home-plus-btn" data-id="${item.id}">＋</button>
+</div>
+
+            <div class="home-item-info">
+              <div class="home-item-price">¥${(item.price ?? 0).toLocaleString()}</div>
+              <div class="home-item-name">${item.name}</div>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    `;
+
+    itemListEl.appendChild(sectionEl);
+  });
+
+  // ＋ボタン → カートに追加
+  itemListEl.querySelectorAll(".home-plus-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-id");
+      addToCart(id);
+    });
+  });
+}
+
+
+
+  
+  // ================= カテゴリ別 縦一覧 =================
+function renderItems() {
+  // デフォルトは「グリッド表示」に戻す
+  itemListEl.classList.remove("grouped");
+  itemListEl.innerHTML = "";
+
+  // ★飲料タブだけは「カテゴリ2ごと」に分けて表示
+  if (currentCategory === "drink") {
+    renderDrinkList();
+    return;
+  }
+
+  // currentCategory → category1Name の対応表
+  let targetCategory1Name = null;
+  if (currentCategory === "hotsnack") {
+    targetCategory1Name = "ホットスナック";
+  } else if (currentCategory === "bread") {
+    targetCategory1Name = "パン";
+  } else if (currentCategory === "limited") {
+    targetCategory1Name = "取り置き限定";
+  }
+  // ※ 必要に応じてここに増やしていけばOK
+
+  const filtered = ITEMS.filter(item => {
+    if (currentCategory === "all") return true;
+    if (!targetCategory1Name) return true; // 念のため
+    return item.category1Name === targetCategory1Name;
+  });
+
+  if (!filtered.length) {
+    itemListEl.innerHTML = `<p class="order-empty-text">商品がありません。</p>`;
+    return;
+  }
+
+  filtered.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "home-item-card";
+
+    card.innerHTML = `
+  <div class="home-thumb-wrap">
+    <img src="${item.imageUrl}" alt="${item.name}">
+    <button class="home-plus-btn" data-id="${item.id}">＋</button>
+  </div>
+  <div class="home-item-info">
+    <div class="home-item-price">¥${(item.price ?? 0).toLocaleString()}</div>
+    <div class="home-item-name">${item.name}</div>
+  </div>
+`;
+
+
+    itemListEl.appendChild(card);
+  });
+
+  itemListEl.querySelectorAll(".home-plus-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-id");
+      addToCart(id);
+    });
+  });
+}
+
+
+  // ================= カート処理 =================
+  function addToCart(id) {
+    const target = ITEMS.find(i => i.id === id);
+    if (!target) return;
+
+    const existing = cart.find(c => c.id === id);
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push({ id: target.id, name: target.name, price: target.price, qty: 1 });
+    }
+    updateCartView();
+  }
+
+  function updateCartView() {
+    const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+    const totalPrice = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+    cartCountEl.textContent = totalQty;
+
+    cartListEl.innerHTML = "";
+    if (cart.length === 0) {
+      emptyCartMsg.classList.remove("hidden");
+      orderForm.classList.add("hidden");
+      cartTotalEl.textContent = "";
+    } else {
+      emptyCartMsg.classList.add("hidden");
+      orderForm.classList.remove("hidden");
+
+      let localTotal = 0;
+      cart.forEach((item, index) => {
+        localTotal += item.price * item.qty;
+
+        const row = document.createElement("div");
+        row.className = "cart-row";
+        row.innerHTML = `
+          <div class="cart-row-main">
+            <div class="cart-row-name">${item.name}</div>
+            <div class="cart-row-controls">
+              <button class="cart-icon-btn" data-index="${index}" data-action="remove">🗑</button>
+              <button class="cart-circle-btn" data-index="${index}" data-action="minus">−</button>
+              <span class="cart-qty">${item.qty}</span>
+              <button class="cart-circle-btn" data-index="${index}" data-action="plus">＋</button>
+            </div>
+          </div>
+          <div class="cart-row-price">¥${(item.price * item.qty).toLocaleString()}</div>
+        `;
+        cartListEl.appendChild(row);
+      });
+
+      cartTotalEl.textContent = `合計：¥${localTotal.toLocaleString()}（税込み目安）`;
+    }
+
+    if (totalQty === 0) {
+      cartBar.classList.add("hidden");
+    } else {
+      cartBar.classList.remove("hidden");
+      cartBarLine1.textContent = `${totalQty}点 ・ ¥${totalPrice.toLocaleString()}`;
+    }
+
+    // 行のボタンにイベント付け
+    cartListEl.querySelectorAll(".cart-icon-btn, .cart-circle-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const index  = Number(btn.dataset.index);
+        const action = btn.dataset.action;
+        if (action === "remove") {
+          removeFromCart(index);
+        } else if (action === "minus") {
+          changeCartQty(index, -1);
+        } else if (action === "plus") {
+          changeCartQty(index, 1);
+        }
+      });
+    });
+  }
+
+  function changeCartQty(index, delta) {
+    const item = cart[index];
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty <= 0) {
+      cart.splice(index, 1);
+    }
+    updateCartView();
+  }
+
+  function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCartView();
+  }
+
+  // ================= 画面切り替え =================
+  function showListView() {
+    homeView.classList.add("hidden");
+    listView.classList.remove("hidden");
+    cartView.classList.add("hidden");
+    completeView.classList.add("hidden");
+    ordersView.classList.add("hidden");
+    storeView.classList.add("hidden");
+  }
+
+  function showCartView() {
+    homeView.classList.add("hidden");
+    listView.classList.add("hidden");
+    cartView.classList.remove("hidden");
+    completeView.classList.add("hidden");
+    ordersView.classList.add("hidden");
+    storeView.classList.add("hidden");
+    updateCartView();
+  }
+
+  function showHomeView() {
+    homeView.classList.remove("hidden");
+    listView.classList.add("hidden");
+    cartView.classList.add("hidden");
+    completeView.classList.add("hidden");
+    ordersView.classList.add("hidden");
+    storeView.classList.add("hidden");
+  }
+
+  function showStoreView() {
+    homeView.classList.add("hidden");
+    listView.classList.add("hidden");
+    cartView.classList.add("hidden");
+    completeView.classList.add("hidden");
+    ordersView.classList.add("hidden");
+    storeView.classList.remove("hidden");
+  }
+
+  function showCompleteView(orderId) {
+    homeView.classList.add("hidden");
+    listView.classList.add("hidden");
+    cartView.classList.add("hidden");
+    completeView.classList.remove("hidden");
+    ordersView.classList.add("hidden");
+    storeView.classList.add("hidden");
+
+    completeMessage.innerHTML = `
+      ご注文ありがとうございます。<br>
+      注文番号：<strong>${orderId}</strong><br>
+      受け取り時間：${timeSelect.value || "未指定"}<br>
+      スタッフにこの番号をお伝えください。
+    `;
+  }
+
+  function showOrdersView() {
+    homeView.classList.add("hidden");
+    listView.classList.add("hidden");
+    cartView.classList.add("hidden");
+    completeView.classList.add("hidden");
+    ordersView.classList.remove("hidden");
+    storeView.classList.add("hidden");
+  }
+
+  // ================= 注文確定（Firestore保存版） =================
+async function handleOrder() {
+  if (cart.length === 0) {
+    alert("カートが空です。");
+    return;
+  }
+  if (!nameInput.value || !telInput.value || !timeSelect.value) {
+    alert("お名前・電話番号・受け取り時間を入力してください。");
+    return;
+  }
+
+  try {
+    // Firestore に保存するデータを作成
+    const orderData = {
+      storeId: "lawson-nanbu-1",
+      status: "new",
+      customerName: nameInput.value,
+      tel: telInput.value,
+      pickupTime: timeSelect.value,
+      items: cart.map(item => ({
+        id: item.id,
+        name: item.name,
+        qty: item.qty,
+        price: item.price
+      })),
+      total: cart.reduce((sum, item) => sum + item.price * item.qty, 0),
+      createdAt: serverTimestamp()   // ← Firebase に時間を自動で入れさせる
+    };
+
+    // Firestore に追加
+    const docRef = await addDoc(collection(db, "orders"), orderData);
+
+    // 完了画面へ
+    showCompleteView(docRef.id);
+
+    // カート初期化
+    cart = [];
+    updateCartView();
+    nameInput.value = "";
+    telInput.value = "";
+    timeSelect.value = "";
+
+  } catch (err) {
+    console.error("注文保存エラー:", err);
+    alert("注文の保存に失敗しました。時間をおいて再度お試しください。");
+  }
+}
+
+
+  // ================= イベント =================
+  // カテゴリタブ
+  categoryTabsEl.addEventListener("click", (e) => {
+    if (!e.target.classList.contains("category-tab")) return;
+
+    document.querySelectorAll(".category-tab").forEach(tab =>
+      tab.classList.remove("active")
+    );
+    e.target.classList.add("active");
+
+    const cat = e.target.getAttribute("data-category");
+    currentCategory = cat;
+
+    if (cat === "all") {
+      showHomeView();
+    } else {
+      renderItems();
+      showListView();
+    }
+  });
+
+  cartButton.addEventListener("click", showCartView);
+  cartBarInner.addEventListener("click", showCartView);
+
+  // 注文タブ切り替え
+  document.querySelectorAll(".order-tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".order-tab").forEach(t =>
+        t.classList.remove("active")
+      );
+      tab.addEventListener("click", () => {});
+      tab.classList.add("active");
+
+      const tabId = tab.getAttribute("data-tab");
+      if (tabId === "items") {
+        orderItemsPanel.classList.remove("hidden");
+        orderHistoryPanel.classList.add("hidden");
+      } else {
+        orderItemsPanel.classList.add("hidden");
+        orderHistoryPanel.classList.remove("hidden");
+      }
+    });
+  });
+
+  // 「注文を開始する」ボタン → メニューへ戻す
+  document.getElementById("startOrderBtn").addEventListener("click", () => {
+    currentCategory = "all";
+    document.querySelectorAll(".category-tab").forEach(tab => {
+      tab.classList.toggle("active", tab.getAttribute("data-category") === "all");
+    });
+    showHomeView();
+  });
+  document.getElementById("startOrderBtn2").addEventListener("click", () => {
+    currentCategory = "all";
+    document.querySelectorAll(".category-tab").forEach(tab => {
+      tab.classList.toggle("active", tab.getAttribute("data-category") === "all");
+    });
+    showHomeView();
+  });
+
+  // 下メニュー
+  toListBtn.addEventListener("click", () => {
+    if (currentCategory === "all") {
+      showHomeView();
+    } else {
+      showListView();
+    }
+  });
+  orderBtn.addEventListener("click", showOrdersView);
+  storeBtn.addEventListener("click", showStoreView);
+
+  // カートバーのボタン → 注文確定
+  document.querySelector(".cart-bar-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    handleOrder();
+  });
+
+  // ================= 初期処理：Firestore から商品読み込み =================
+  loadItemsFromFirestore();
+</script>
+
+
+</body>
+</html>
